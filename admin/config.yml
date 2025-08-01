@@ -1,0 +1,24 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "static/images/uploads"
+public_folder: "/images/uploads"
+
+collections:
+  - name: "posts"
+    label: "المنشورات"
+    folder: "content/posts"
+    create: true
+    slug: "{{slug}}"
+    identifier_field: "title"
+    fields:
+      - {label: "العنوان", name: "title", widget: "string", required: true}
+      - {label: "التاريخ", name: "date", widget: "datetime", required: false}
+      - {label: "المسودة", name: "draft", widget: "boolean", default: false}
+      - {label: "الفئة", name: "category", widget: "select", options: ["movies", "sports", "video-design", "misc"], required: false}
+      - {label: "الوصف", name: "description", widget: "text", required: false}
+      - {label: "الرابط", name: "link", widget: "string", required: false}
+      - {label: "المحتوى", name: "body", widget: "markdown", required: false}
+      - {label: "ملف التحميل", name: "download_file", widget: "file", allow_multiple: false, required: false}
+

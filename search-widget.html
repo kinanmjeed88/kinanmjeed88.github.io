@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ميزة البحث</title>
+    <style>
+        .search-widget {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .search-title {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .search-container {
+            position: relative;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: #667eea;
+            cursor: pointer;
+        }
+        
+        .clear-btn {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            display: none;
+            font-size: 14px;
+        }
+        
+        .search-results {
+            margin-top: 20px;
+            color: white;
+            font-size: 16px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .no-results {
+            color: #ffeb3b;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="search-widget">
+        <div class="search-title">🔍 البحث في المنشورات</div>
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="ابحث عن عنوان المنشور..." id="searchInput">
+            <span class="search-icon" onclick="performSearch()">🔍</span>
+            <button class="clear-btn" onclick="clearSearch()" id="clearBtn">✕</button>
+        </div>
+        <div class="search-results" id="searchResults"></div>
+    </div>
+
+    <script>
+        let allPosts = [];
+        let isInitialized = false;
+
+        function initializeSearch() {
+            if (isInitialized) return;
+            
+            // جمع جميع المنشورات من الصفحة الأساسية
+            if (window.parent && window.parent.document) {
+                const posts = window.parent.document.querySelectorAll('.post-card, .post-item, [class*="post"]');
+                allPosts = Array.from(posts).map(post => {
+                    const titleElement = post.querySelector('h2, h3, .post-title, a[href*="/posts/"]');
+                    const title = titleElement ? titleElement.textContent.trim() : '';
+                    return {
+                        element: post,
+                        title: title.toLowerCase()
+                    };
+                }).filter(post => post.title);
+                
+                console.log('تم العثور على', allPosts.length, 'منشور');
+                isInitialized = true;
+            }
+        }
+
+        function performSearch() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            const resultsDiv = document.getElementById('searchResults');
+            const clearBtn = document.getElementById('clearBtn');
+            
+            if (!isInitialized) {
+                initializeSearch();
+            }
+            
+            if (searchTerm === '') {
+                // إظهار جميع المنشورات
+                allPosts.forEach(post => {
+                    if (post.element) post.element.style.display = '';
+                });
+                resultsDiv.innerHTML = '';
+                clearBtn.style.display = 'none';
+                return;
+            }
+            
+            // البحث في المنشورات
+            let visibleCount = 0;
+            allPosts.forEach(post => {
+                if (post.title.includes(searchTerm)) {
+                    if (post.element) post.element.style.display = '';
+                    visibleCount++;
+                } else {
+                    if (post.element) post.element.style.display = 'none';
+                }
+            });
+            
+            // عرض النتائج
+            if (visibleCount === 0) {
+                resultsDiv.innerHTML = '<div class="no-results">لم يتم العثور على نتائج مطابقة</div>';
+            } else {
+                resultsDiv.innerHTML = `تم العثور على ${visibleCount} منشور مطابق`;
+            }
+            
+            clearBtn.style.display = 'block';
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').innerHTML = '';
+            document.getElementById('clearBtn').style.display = 'none';
+            
+            // إظهار جميع المنشورات
+            allPosts.forEach(post => {
+                if (post.element) post.element.style.display = '';
+            });
+        }
+
+        // البحث أثناء الكتابة
+        document.getElementById('searchInput').addEventListener('input', performSearch);
+        
+        // البحث عند الضغط على Enter
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // تهيئة البحث عند تحميل الصفحة
+        window.addEventListener('load', function() {
+            setTimeout(initializeSearch, 1000);
+        });
+    </script>
+</body>
+</html>
+

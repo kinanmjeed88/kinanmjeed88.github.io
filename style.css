@@ -1,0 +1,892 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@font-face {
+    font-family: 'Iphone Arabic';
+    src: url('Iphone(Arabic).ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'Iphone Arabic', 'Cairo', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header Styles */
+.header {
+    text-align: center;
+    margin-bottom: 20px; /* Reduced margin */
+    background: url('telegram_bg.png') center center / cover, rgba(255, 255, 255, 0.7); /* More transparent */
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.5); /* White border */
+}
+
+.profile-section {
+    margin-bottom: 15px;
+}
+
+.profile-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    padding: 8px 16px;
+    border-radius: 50px;
+    background: rgba(102, 126, 234, 0.1);
+    border: 2px solid transparent;
+}
+
+.profile-link:hover {
+    transform: translateY(-2px);
+    background: rgba(102, 126, 234, 0.2);
+    border-color: rgba(102, 126, 234, 0.3);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+}
+
+.profile-pic {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #667eea;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.profile-link:hover .profile-pic {
+    transform: scale(1.05);
+    border-color: #764ba2;
+}
+
+.profile-name {
+    font-size: 1.4rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transition: all 0.3s ease;
+}
+
+.profile-link:hover .profile-name {
+    transform: scale(1.02);
+}
+
+.subtitle {
+    font-size: 1rem;
+    color: #7f8c8d;
+    font-weight: 400;
+    margin: 0;
+}
+
+/* Featured Cards Section */
+.featured-section {
+    margin-bottom: 20px; /* Reduced margin */
+}
+
+.featured-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5px;
+    margin-bottom: 20px; /* Reduced margin */
+}
+
+.featured-card {
+    background: rgba(240, 240, 240, 0.95);
+    border-radius: 15px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.8); /* White border */
+    position: relative;
+    overflow: hidden;
+    height: 80px; /* Adjusted height to 80px */
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-align: right;
+}
+
+.featured-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s;
+}
+
+.featured-card:hover::before {
+    left: 100%;
+}
+
+.featured-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    background: rgba(250, 250, 250, 1);
+    border-color: #667eea;
+}
+
+.featured-card-icon {
+    width: 40px; /* Adjusted size */
+    height: 40px; /* Adjusted size */
+    margin: 0 auto 8px; /* Reduced margin */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.featured-card-icon img {
+    width: 24px; /* Adjusted size */
+    height: 24px; /* Adjusted size */
+    object-fit: contain;
+    filter: brightness(1.1);
+}
+
+.featured-card-content h3 {
+    font-size: 1.2rem; /* Increased font size */
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Single column for main cards */
+    gap: 5px;
+    margin-bottom: 15px;
+}
+
+.card {
+    background: rgba(240, 240, 240, 0.95);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-align: right;
+    height: 8in; /* Set height to 8 inches */
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s;
+}
+
+.card:hover::before {
+    left: 100%;
+}
+
+.card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 1);
+}
+
+.card-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
+}
+
+.card-icon img {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    filter: brightness(1.1);
+}
+
+.card-content h3 {
+    font-size: 1.5rem; /* Increased font size */
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+    line-height: 1.3;
+    text-align: right;
+}
+.sub-section {
+    margin-bottom: 8px;
+    background: rgba(240, 240, 240, 0.9);
+    padding: 15px;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+}
+
+.sub-sections-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* صفان بدلاً من أربعة */
+    gap: 5px;
+    margin-bottom: 15px;
+}
+
+.dropdown-card {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    border-radius: 15px;
+    margin-bottom: 8px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    height: 80px; /* ارتفاع ثابت 80 بكسل */
+    width: 100%; /* عرض كامل */
+    max-width: 400px;
+    min-height: 40px;
+    display: flex;
+    flex-direction: row; /* تغيير إلى صف لتوسيط المحتوى */
+    align-items: center; /* توسيط عمودي */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* خلفيات مخصصة لكل بطاقة */
+.dropdown-card.movies-card {
+    background-image: url('movies_bg.png');
+    background-color: rgba(102, 126, 234, 0.1);
+}
+
+.dropdown-card.sports-card {
+    background-image: url('sports_bg.png');
+    background-color: rgba(52, 152, 219, 0.1);
+}
+
+.dropdown-card.video-design-card {
+    background-image: url('video_design_bg.png');
+    background-color: rgba(155, 89, 182, 0.1);
+}
+
+.dropdown-card.misc-card {
+    background-image: url('live_broadcast_bg.png');
+    background-color: rgba(231, 76, 60, 0.1);
+}
+
+.dropdown-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.dropdown-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    padding: 8px 0;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.3); /* خلفية شفافة لتعتيم الصورة */
+    backdrop-filter: blur(5px); /* تأثير ضبابي خفيف */
+    transition: all 0.3s ease;
+    border-radius: 15px;
+    font-size: 1.8rem;
+}
+
+.dropdown-header:hover {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(15px);
+}
+
+.dropdown-icon {
+    display: none;
+}
+
+    font-size: 1.8rem;
+
+.dropdown-arrow {
+    font-size: 1rem;
+    color: #667eea;
+    transition: transform 0.3s ease;
+}
+
+.dropdown-card.active .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: rgba(248, 249, 250, 0.95);
+}
+
+.dropdown-card.active .dropdown-content {
+    max-height: 500px;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: translateX(-5px);
+}
+
+.dropdown-item-icon {
+    font-size: 1.2rem;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    color: white;
+    flex-shrink: 0;
+}
+
+.dropdown-item-text {
+    flex: 1;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+/* Social Links */
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.social-links a {
+    font-size: 2rem;
+    color: #667eea;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.social-links a:hover {
+    color: #764ba2;
+    transform: scale(1.1);
+}
+
+/* Sub Sections */
+.sub-sections-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* صفان بدلاً من أربعة */
+    gap: 5px;
+    margin-bottom: 15px;
+}
+
+.sub-section {
+    margin-bottom: 8px;
+    background: rgba(240, 240, 240, 0.9);
+    padding: 15px;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+}
+
+.section-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 25px;
+    text-align: center;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 2px;
+}
+
+.sub-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 5px;
+}
+
+.sub-card {
+    background: rgba(240, 240, 240, 0.8);
+    border-radius: 15px;
+    padding: 15px; /* Reduced padding */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.8); /* White border */
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Reduced gap */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    min-height: 60px; /* Reduced height to half */
+}
+
+.sub-card:hover {
+    transform: translateY(-5px);
+    border-color: #667eea;
+    background: rgba(250, 250, 250, 1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.sub-card-icon {
+    font-size: 1.5rem;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    color: white;
+    flex-shrink: 0;
+}
+
+.sub-card-text {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #2c3e50;
+    flex: 1;
+}
+
+/* Footer */
+.footer {
+    background: rgba(240, 240, 240, 0.95);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    margin-top: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+}
+
+.footer-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.channel-info a {
+    color: #667eea;
+    text-decoration: none;
+    font-size: 1.3rem;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.channel-info a:hover {
+    color: #764ba2;
+}
+
+.copyright {
+    color: #7f8c8d;
+    font-size: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .profile-pic {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .profile-name {
+        font-size: 1.2rem;
+        font-weight: 800;
+    }
+    
+    .subtitle {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+    
+    .featured-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px; /* Reduced gap */
+    }
+    
+    .featured-card {
+        height: 80px; /* Adjusted height */
+        padding: 10px;
+    }
+    
+    .featured-card-icon {
+        width: 35px;
+        height: 35px;
+        margin-bottom: 6px;
+    }
+    
+    .featured-card-icon img {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .featured-card-content h3 {
+        font-size: 0.8rem;
+        font-weight: 700;
+        line-height: 1.2;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .sub-sections-grid {
+        grid-template-columns: repeat(2, 1fr); /* صفان بدلاً من أربعة */
+        gap: 10px;
+    }
+    
+    .dropdown-card {
+        width: 100px; /* عرض  100 بكسل */
+        height: 40px; /* ارتفاع ثابت 40 بكسل */
+        max-width: 400px;
+        min-height: 40px;
+    }
+    
+    .card {
+        padding: 15px;
+        min-height: 140px;
+    }
+    
+    .card-icon {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 15px;
+    }
+    
+    .card-icon img {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .card-content h3 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        line-height: 1.3;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .sub-card {
+        padding: 12px;
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+        min-height: 100px;
+    }
+    
+    .sub-card-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+    
+    .sub-card-text {
+        font-size: 0.85rem;
+        font-weight: 600;
+        line-height: 1.2;
+    }
+    
+    .section-title {
+        font-size: 1.6rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-pic {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .profile-name {
+        font-size: 1.1rem;
+        font-weight: 900;
+    }
+    
+    .subtitle {
+        font-size: 0.85rem;
+    }
+    
+    .featured-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px; /* Reduced gap */
+    }
+    
+    .featured-card {
+        height: 80px; /* Adjusted height */
+        padding: 8px;
+    }
+    
+    .featured-card-icon {
+        width: 30px;
+        height: 30px;
+        margin-bottom: 4px;
+    }
+    
+    .featured-card-icon img {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .featured-card-content h3 {
+        font-size: 0.7rem;
+        font-weight: 800;
+        line-height: 1.1;
+    }
+    
+    .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    
+    .sub-sections-grid {
+        grid-template-columns: repeat(2, 1fr); /* صفان بدلاً من أربعة */
+        gap: 8px;
+    }
+    
+    .dropdown-card {
+        width: 100px; /* عرض  100 بكسل */
+        height: 40px; /* ارتفاع ثابت 40 بكسل */
+        max-width: 400px;
+        min-height: 40px;
+    }
+    
+    .card {
+        padding: 12px;
+        min-height: 130px;
+    }
+    
+    .card-content h3 {
+        font-size: 1.0rem;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+    
+    .section-title {
+        font-size: 1.4rem;
+        font-weight: 900;
+    }
+    
+    .sub-card {
+        padding: 10px;
+        min-height: 90px;
+    }
+    
+    .sub-card-text {
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+}
+
+/* شاشات صغيرة جداً */
+@media (max-width: 360px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .header {
+        padding: 20px;
+        margin-bottom: 15px; /* Reduced margin */
+    }
+    
+    .profile-pic {
+        width: 35px;
+        height: 35px;
+        border-width: 2px;
+    }
+    
+    .profile-name {
+        font-size: 1rem;
+        font-weight: 900;
+    }
+    
+    .profile-link {
+        gap: 8px;
+        padding: 6px 12px;
+    }
+    
+    .subtitle {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+    
+    .sub-sections-grid {
+        grid-template-columns: repeat(2, 1fr); /* صفان بدلاً من أربعة */
+        gap: 6px; /* Reduced gap */
+        margin-bottom: 15px; /* Reduced margin */
+    }
+    
+    .dropdown-card {
+        width: 100px; /* عرض  100 بكسل */
+        height: 40px; /* ارتفاع ثابت 40 بكسل */
+        max-width: 400px;
+        min-height: 40px;
+        padding: 4px; /* تصغير الحشو */
+    }
+    
+    .dropdown-header {
+        padding: 4px 8px; /* تصغير الحشو */
+        font-size: clamp(8px, 2vw, 12px); /* حجم خط متجاوب للشاشات الصغيرة */
+        font-weight: 600;
+        color: #2c3e50;
+        white-space: nowrap; /* منع التفاف النص */
+        overflow: hidden; /* إخفاء النص الزائد */
+        text-overflow: ellipsis; /* إضافة نقاط للنص المخفي */
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .featured-card {
+        height: 60px; /* Reduced height */
+        padding: 8px;
+        gap: 8px;
+    }
+    
+    .featured-card-icon {
+        width: 25px;
+        height: 25px;
+        margin-bottom: 4px;
+    }
+    
+    .featured-card-icon img {
+        width: 15px;
+        height: 15px;
+    }
+    
+    .featured-card-content h3 {
+        font-size: 0.7rem;
+        font-weight: 800;
+        line-height: 1.1;
+    }
+    
+    .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .card {
+        padding: 12px;
+        height: 80px; /* Fixed height to 80px */
+        min-height: auto;
+    }
+    
+    .card-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .card-icon img {
+        width: 25px;
+        height: 25px;
+    }
+    
+    .card-content h3 {
+        font-size: 1.0rem;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+    
+    .section-title {
+        font-size: 1.4rem;
+        font-weight: 900;
+    }
+    
+    .sub-card {
+        padding: 10px;
+        min-height: 90px;
+    }
+    
+    .sub-card-text {
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+}
+
+
