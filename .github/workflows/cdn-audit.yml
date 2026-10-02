@@ -54,10 +54,32 @@ jobs:
           probe "https://cdn.jsdelivr.net/npm/lucide@1.50.0/dist/umd/lucide.min.js" lucide_jsdelivr.js
           cat "$OUT"
 
-      - name: حفظ التقرير في الفرع (لأن سجلات Actions غير قابلة للتنزيل من بيئة العمل)
+      - name: "فحص CORS مع إرسال Origin — هل يقبل المتصفح SRI؟"
+        run: |
+          OUT2=cdn-audit-report2.txt
+          : > "$OUT2"
+          raw () {
+            url="$1"
+            {
+              echo "##################################################################"
+              echo "URL: $url"
+              echo "--- رؤوس عادية (بلا Origin) ---"
+              curl -sSL -A "$UA" -D - -o /dev/null "$url" | tr -d '\r' | sed -n '1,25p'
+              echo "--- رؤوس مع Origin: https://kinantouch.com ---"
+              curl -sSL -A "$UA" -H "Origin: https://kinantouch.com" -D - -o /dev/null "$url" | tr -d '\r' | grep -iE '^(HTTP/|access-control|vary|content-type|cache-control|age|cf-cache-status|server|timing-allow)' 
+              echo "--- رؤوس مع Origin + طلب مسبق OPTIONS ---"
+              curl -sS -X OPTIONS -A "$UA" -H "Origin: https://kinantouch.com" -H "Access-Control-Request-Method: GET" -D - -o /dev/null "$url" | tr -d '\r' | grep -iE '^(HTTP/|access-control|allow)' || echo "(لا استجابة OPTIONS)"
+            } >> "$OUT2"
+          }
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+          raw "https://cdn.tailwindcss.com/3.4.17"
+          raw "https://unpkg.com/lucide@1.50.0/dist/umd/lucide.min.js"
+          cat "$OUT2"
+
+      - name: حفظ التقريرين في الفرع (لأن سجلات Actions غير قابلة للتنزيل من بيئة العمل)
         run: |
           git config user.name "cdn-audit"
           git config user.email "cdn-audit@users.noreply.github.com"
-          git add cdn-audit-report.txt
+          git add cdn-audit-report.txt cdn-audit-report2.txt
           git commit -m "chore(ci): تقرير فحص CDN المؤقت (يُحذف لاحقاً)" || echo "لا تغييرات"
           git push origin HEAD:arena/01a0fd0d-kinanmjeed88-github-io
