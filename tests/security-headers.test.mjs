@@ -195,6 +195,8 @@ const REQUIRED_SOURCES = {
     'https://www.youtube.com/embed/abc',
     'https://googleads.g.doubleclick.net/pagead/ads',
     'https://tpc.googlesyndication.com/safeframe/1-0-40/html/container.html',
+    'https://ep2.adtrafficquality.google/frame.html',
+    'https://securepubads.g.doubleclick.net/pagead/ads',
   ],
 };
 const missingRequired = [];
