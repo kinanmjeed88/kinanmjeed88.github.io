@@ -52,6 +52,210 @@ const brandIcons = {
     "Viber": { path: '<path d="M19.9 16.5c-1.3-.6-2.5-1-3.6-.6-1 .4-1.5 1.4-1.8 1.5-.7-.2-2.6-1-3.8-2.2-1.2-1.2-2-3.1-2.2-3.8.1-.3 1.1-.8 1.5-1.8.4-1.1 0-2.3-.6-3.6-1-2.2-3.4-1.8-3.9-1.6-.5.1-.9.6-1.1 1-.8 1.7-.6 4.7 2.1 7.4 2.7 2.7 5.7 2.9 7.4 2.1.4-.2.9-.6 1-1.1.2-.5.6-2.9-1.6-3.9z"/>', viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2" }
 };
 
+
+// ============================================================================
+//  🔒 أدوات الحماية (Sanitization / Escaping)
+//  تُستخدم قبل أي إدراج في innerHTML لمنع ثغرات XSS المخزّنة.
+// ============================================================================
+
+const HTML_ESCAPE_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+
+/** تهريب كامل للنص قبل إدراجه في HTML (مناسب أيضاً لقيم السمات) */
+function escapeHtml(value) {
+    if (value === null || value === undefined) return '';
+    return String(value).replace(/[&<>"']/g, ch => HTML_ESCAPE_MAP[ch]);
+}
+const escapeAttr = escapeHtml;
+
+/** يسمح بالروابط الآمنة فقط (http/https/نسبية/مرساة) ويمنع javascript: وأمثالها */
+function safeUrl(value) {
+    const url = String(value === null || value === undefined ? '' : value).trim();
+    if (!url) return '';
+    const probe = url.toLowerCase().replace(/[\u0000-\u0020]/g, '');
+    if (probe.startsWith('javascript:') || probe.startsWith('vbscript:') || probe.startsWith('data:text/html')) return '';
+    if (/^data:image\//i.test(url)) return url;
+    if (/^(https?:)?\/\//i.test(url) || /^[.#?/]/.test(url) || /^[\w.-]/.test(url)) return url;
+    return '';
+}
+
+/** أسماء أيقونات Lucide المسموح بها (حروف لاتينية صغيرة وأرقام وشرطات) */
+function safeIconName(value, fallback = 'star') {
+    const name = String(value || '').trim();
+    return /^[a-z0-9-]{1,40}$/.test(name) ? name : fallback;
+}
+
+const RICH_TEXT_ALLOWED = {
+    SPAN: ['class'], B: [], STRONG: [], I: [], EM: [], U: [], MARK: [], SMALL: [], SUP: [], SUB: [], BR: []
+};
+
+/**
+ * يعقّم HTML مع السماح بمجموعة محدودة من الوسوم الآمنة فقط
+ * (يُستخدم لعناوين المقالات التي قد تحتوي تنسيقاً مقصوداً مثل <span class="...">).
+ */
+function sanitizeRichText(markup) {
+    const source = String(markup === null || markup === undefined ? '' : markup);
+    if (!source) return '';
+    const template = document.createElement('template');
+    template.innerHTML = source; // المحتوى داخل <template> لا يُنفّذ
+    const clean = (node) => {
+        [...node.childNodes].forEach(child => {
+            if (child.nodeType === 1) {
+                clean(child);
+                const allowedAttrs = RICH_TEXT_ALLOWED[child.tagName.toUpperCase()];
+                if (!allowedAttrs) {
+                    const inner = [...child.childNodes];
+                    child.replaceWith(...inner); // إزالة الوسم مع الإبقاء على النص
+                    return;
+                }
+                [...child.attributes].forEach(attr => {
+                    const name = attr.name.toLowerCase();
+                    if (/^on/i.test(name) || !allowedAttrs.includes(name)) { child.removeAttribute(attr.name); return; }
+                    if (name === 'class') {
+                        const safeClasses = attr.value.split(/\s+/).filter(c => /^[A-Za-z0-9_-]{1,40}$/.test(c)).join(' ');
+                        if (safeClasses) child.setAttribute('class', safeClasses); else child.removeAttribute('class');
+                    }
+                });
+            } else if (child.nodeType === 8 || child.nodeType !== 3) {
+                child.remove(); // تعليقات وعقد غير نصية
+            }
+        });
+    };
+    clean(template.content);
+    return template.innerHTML;
+}
+
+const SVG_ALLOWED_TAGS = ['svg', 'g', 'path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon'];
+const SVG_ALLOWED_ATTRS = ['viewbox', 'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin',
+    'd', 'x', 'y', 'cx', 'cy', 'r', 'rx', 'ry', 'x1', 'y1', 'x2', 'y2', 'width', 'height', 'points',
+    'transform', 'fill-rule', 'clip-rule', 'opacity', 'fill-opacity', 'stroke-opacity'];
+
+/** يعقّم مقطع SVG مخزَّن في ملفات البيانات قبل إدراجه في الصفحة */
+function sanitizeSvg(fragment) {
+    const source = String(fragment === null || fragment === undefined ? '' : fragment);
+    if (!source) return '';
+    let doc;
+    try {
+        doc = new DOMParser().parseFromString(`<svg xmlns="http://www.w3.org/2000/svg">${source}</svg>`, 'image/svg+xml');
+    } catch (e) { return ''; }
+    if (!doc || !doc.documentElement || doc.documentElement.nodeName === 'parsererror') return '';
+    const walk = (el) => {
+        [...el.children].forEach(child => {
+            if (!SVG_ALLOWED_TAGS.includes(child.tagName.toLowerCase())) { child.remove(); return; }
+            [...child.attributes].forEach(attr => {
+                const lname = attr.name.toLowerCase();
+                const bad = lname.startsWith('on') || /javascript:/i.test(attr.value) || /url\s*\(/i.test(attr.value);
+                if (bad || !SVG_ALLOWED_ATTRS.includes(lname)) child.removeAttribute(attr.name);
+            });
+            walk(child);
+        });
+    };
+    walk(doc.documentElement);
+    return [...doc.documentElement.children].map(c => new XMLSerializer().serializeToString(c)).join('');
+}
+
+/**
+ * محلّل آمن لمصفوفة JavaScript مكتوبة داخل ملف (بديل new Function/eval).
+ * يقبل فقط: مصفوفات/كائنات/نصوص/أرقام/true/false/null ومفاتيح بدون علامات اقتباس.
+ * يرفض أي دالة أو تعبير أو أي رمز آخر ويرمي خطأ.
+ */
+function safeParseJsArray(src) {
+    const text = String(src === null || src === undefined ? '' : src);
+    const len = text.length;
+    const FORBIDDEN_KEYS = ['__proto__', 'constructor', 'prototype'];
+    let i = 0;
+
+    const skipWs = () => { while (i < len && /\s/.test(text[i])) i++; };
+
+    const parseString = (quote) => {
+        i++;
+        let out = '';
+        while (i < len) {
+            const ch = text[i++];
+            if (ch === '\\') {
+                const esc = text[i++];
+                const map = { n: '\n', r: '\r', t: '\t', b: '\b', f: '\f', '\\': '\\', '/': '/', '"': '"', "'": "'" };
+                if (esc === 'u') {
+                    const hex = text.substr(i, 4);
+                    if (!/^[0-9a-fA-F]{4}$/.test(hex)) throw new Error('unicode escape غير صالح');
+                    out += String.fromCharCode(parseInt(hex, 16)); i += 4;
+                } else if (map[esc] !== undefined) { out += map[esc]; }
+                else { out += esc; }
+            } else if (ch === quote) {
+                return out;
+            } else {
+                if (ch === '\n' || ch === '\r') throw new Error('نص غير مغلق');
+                out += ch;
+            }
+        }
+        throw new Error('نص غير مغلق داخل الملف');
+    };
+
+    const parseObject = () => {
+        i++; // {
+        const obj = {};
+        skipWs();
+        if (text[i] === '}') { i++; return obj; }
+        while (i < len) {
+            skipWs();
+            let key;
+            if (text[i] === '"' || text[i] === "'") { key = parseString(text[i]); }
+            else {
+                const start = i;
+                while (i < len && /[\w$]/.test(text[i])) i++;
+                key = text.slice(start, i);
+            }
+            if (!key) throw new Error('مفتاح غير صالح في الملف');
+            if (FORBIDDEN_KEYS.includes(key)) throw new Error('مفتاح ممنوع: ' + key);
+            skipWs();
+            if (text[i] !== ':') throw new Error('متوقع ":" في الملف');
+            i++;
+            obj[key] = parseValue();
+            skipWs();
+            if (text[i] === ',') { i++; continue; }
+            if (text[i] === '}') { i++; return obj; }
+            throw new Error('متوقع "," أو "}" في الملف');
+        }
+        throw new Error('كائن غير مغلق في الملف');
+    };
+
+    const parseArray = () => {
+        i++; // [
+        const arr = [];
+        skipWs();
+        if (text[i] === ']') { i++; return arr; }
+        while (i < len) {
+            arr.push(parseValue());
+            skipWs();
+            if (text[i] === ',') { i++; continue; }
+            if (text[i] === ']') { i++; return arr; }
+            throw new Error('متوقع "," أو "]" في الملف');
+        }
+        throw new Error('مصفوفة غير مغلقة في الملف');
+    };
+
+    const parseValue = () => {
+        skipWs();
+        const ch = text[i];
+        if (ch === '{') return parseObject();
+        if (ch === '[') return parseArray();
+        if (ch === '"' || ch === "'") return parseString(ch);
+        const start = i;
+        while (i < len && /[-\w.+E]/.test(text[i])) i++;
+        const raw = text.slice(start, i);
+        if (raw === 'true') return true;
+        if (raw === 'false') return false;
+        if (raw === 'null') return null;
+        if (/^-?\d+(\.\d+)?([eE][-+]?\d+)?$/.test(raw)) return Number(raw);
+        throw new Error('قيمة غير مدعومة (تم رفضها لأسباب أمنية): ' + raw.slice(0, 30));
+    };
+
+    const result = parseValue();
+    skipWs();
+    if (i < len) throw new Error('يوجد محتوى إضافي بعد نهاية المصفوفة');
+    if (!Array.isArray(result)) throw new Error('البنية ليست مصفوفة');
+    return result;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     initIconPicker();
     if (!ghConfig.token) {
@@ -285,11 +489,11 @@ function applyIconChange(iconData) {
         if(iconData.type === 'image') { 
             let sUrl = iconData.value;
             if(sUrl && !sUrl.startsWith('http')) sUrl = '../' + sUrl.replace(/^(\.\.\/)+/, '');
-            html = `<img src="${sUrl}" style="width:24px; height:24px; object-fit:contain;">`; 
+            html = `<img src="${escapeAttr(safeUrl(sUrl))}" style="width:24px; height:24px; object-fit:contain;">`; 
         } else if (iconData.type === 'svg') {
-            html = `<svg viewBox="${iconData.viewBox}" fill="${iconData.fill}" stroke="${iconData.stroke}" stroke-width="${iconData.strokeWidth}" style="width:24px; height:24px">${iconData.value}</svg>`;
+            html = `<svg viewBox="${escapeAttr(iconData.viewBox)}" fill="${escapeAttr(iconData.fill)}" stroke="${escapeAttr(iconData.stroke)}" stroke-width="${escapeAttr(iconData.strokeWidth)}" style="width:24px; height:24px">${sanitizeSvg(iconData.value)}</svg>`;
         } else { 
-            html = `<i data-lucide="${iconData.value}"></i>`; 
+            html = `<i data-lucide="${safeIconName(iconData.value)}"></i>`; 
         }
         btn.innerHTML = html;
         if(iconData.type === 'lucide') lucide.createIcons(); 
@@ -348,19 +552,19 @@ function renderPosts() {
             safeImage = 'https://via.placeholder.com/300x200?text=No+Image';
         }
 
-        const dateDisplay = (p.updated && p.updated !== p.date) ? `<span class="text-blue-500 font-bold" title="تم التحديث">♻ ${p.updated}</span>` : `<span>${p.date || ''}</span>`;
+        const dateDisplay = (p.updated && p.updated !== p.date) ? `<span class="text-blue-500 font-bold" title="تم التحديث">♻ ${escapeHtml(p.updated)}</span>` : `<span>${escapeHtml(p.date || '')}</span>`;
         // Show Time if exists
-        const timeDisplay = p.time ? `<span class="text-gray-400 ml-1 text-[10px]">${p.time}</span>` : '';
+        const timeDisplay = p.time ? `<span class="text-gray-400 ml-1 text-[10px]">${escapeHtml(p.time)}</span>` : '';
 
         const card = document.createElement('div');
         card.className = 'bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex justify-between items-center hover:shadow-md transition-all';
         card.innerHTML = `
             <div class="flex items-center gap-4">
-                <img src="${safeImage}" class="w-16 h-10 object-cover rounded-md bg-gray-100">
+                <img src="${escapeAttr(safeUrl(safeImage))}" class="w-16 h-10 object-cover rounded-md bg-gray-100">
                 <div class="flex-1 min-w-0">
-                    <h3 class="font-bold text-gray-800 line-clamp-1">${p.title || ''}</h3>
+                    <h3 class="font-bold text-gray-800 line-clamp-1">${sanitizeRichText(p.title || '')}</h3>
                     <div class="text-xs text-gray-400 flex gap-2 items-center">
-                        ${dateDisplay} ${timeDisplay} <span>•</span> <span class="bg-gray-100 px-2 py-0.5 rounded text-gray-600">${p.category || ''}</span>
+                        ${dateDisplay} ${timeDisplay} <span>•</span> <span class="bg-gray-100 px-2 py-0.5 rounded text-gray-600">${escapeHtml(p.category || '')}</span>
                     </div>
                 </div>
             </div>
@@ -572,14 +776,14 @@ function renderChannels() {
         if (ch.iconData && ch.iconData.type === 'image') { 
             let iUrl = ch.iconData.value;
             if(iUrl && !iUrl.startsWith('http')) iUrl = '../' + iUrl.replace(/^(\.\.\/)+/, '');
-            iconHtml = `<img src="${iUrl}" style="width:${ch.iconData.size||24}px; height:${ch.iconData.size||24}px; object-fit:contain;">`; 
+            iconHtml = `<img src="${escapeAttr(safeUrl(iUrl))}" style="width:${Number(ch.iconData.size)||24}px; height:${Number(ch.iconData.size)||24}px; object-fit:contain;">`; 
         } else if (ch.iconData && ch.iconData.type === 'svg') {
-            const size = ch.iconData.size || 24;
-            iconHtml = `<svg viewBox="${ch.iconData.viewBox}" fill="${ch.iconData.fill}" stroke="${ch.iconData.stroke}" stroke-width="${ch.iconData.strokeWidth}" style="width:${size}px; height:${size}px">${ch.iconData.value}</svg>`;
+            const size = Number(ch.iconData.size) || 24;
+            iconHtml = `<svg viewBox="${escapeAttr(ch.iconData.viewBox)}" fill="${escapeAttr(ch.iconData.fill)}" stroke="${escapeAttr(ch.iconData.stroke)}" stroke-width="${escapeAttr(ch.iconData.strokeWidth)}" style="width:${size}px; height:${size}px">${sanitizeSvg(ch.iconData.value)}</svg>`;
         } else { 
-            iconHtml = `<i data-lucide="${(ch.iconData && ch.iconData.value) ? ch.iconData.value : ch.icon || 'star'}"></i>`; 
+            iconHtml = `<i data-lucide="${safeIconName((ch.iconData && ch.iconData.value) ? ch.iconData.value : ch.icon)}"></i>`; 
         }
-        return `<div class="bg-white p-4 rounded-xl border border-gray-100 flex items-center gap-4 group"><button onclick="openIconPickerForChannel(${index})" class="w-12 h-12 flex items-center justify-center bg-${ch.color || 'blue'}-100 text-${ch.color || 'blue'}-600 rounded-lg hover:bg-gray-200 transition-colors overflow-hidden">${iconHtml}</button><div class="flex-1"><input type="text" value="${ch.name}" class="font-bold text-gray-800 w-full bg-transparent mb-1 outline-none focus:border-b border-blue-500" onchange="updateChannel(${index}, 'name', this.value)"><input type="text" value="${ch.desc}" class="text-xs text-gray-400 w-full bg-transparent outline-none focus:border-b border-blue-500" onchange="updateChannel(${index}, 'desc', this.value)"><input type="text" value="${ch.url}" class="text-xs text-blue-400 w-full bg-transparent outline-none focus:border-b border-blue-500 mt-1" onchange="updateChannel(${index}, 'url', this.value)"></div><div class="opacity-0 group-hover:opacity-100 transition-opacity"><button onclick="removeChannel(${index})" class="text-red-500 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div>`;
+        return `<div class="bg-white p-4 rounded-xl border border-gray-100 flex items-center gap-4 group"><button onclick="openIconPickerForChannel(${index})" class="w-12 h-12 flex items-center justify-center bg-${ch.color || 'blue'}-100 text-${ch.color || 'blue'}-600 rounded-lg hover:bg-gray-200 transition-colors overflow-hidden">${iconHtml}</button><div class="flex-1"><input type="text" value="${escapeAttr(ch.name)}" class="font-bold text-gray-800 w-full bg-transparent mb-1 outline-none focus:border-b border-blue-500" onchange="updateChannel(${index}, 'name', this.value)"><input type="text" value="${escapeAttr(ch.desc)}" class="text-xs text-gray-400 w-full bg-transparent outline-none focus:border-b border-blue-500" onchange="updateChannel(${index}, 'desc', this.value)"><input type="text" value="${escapeAttr(ch.url)}" class="text-xs text-blue-400 w-full bg-transparent outline-none focus:border-b border-blue-500 mt-1" onchange="updateChannel(${index}, 'url', this.value)"></div><div class="opacity-0 group-hover:opacity-100 transition-opacity"><button onclick="removeChannel(${index})" class="text-red-500 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div>`;
     }).join('');
     if(!document.getElementById('btnSaveChannels')) { const btn = document.createElement('button'); btn.id = 'btnSaveChannels'; btn.className = 'w-full bg-purple-600 text-white py-3 rounded-xl font-bold mt-4'; btn.innerText = 'حفظ التغييرات على القنوات'; btn.onclick = saveChannels; list.parentElement.appendChild(btn); } lucide.createIcons();
 }
@@ -718,11 +922,11 @@ async function loadSettings() {
             if (data.type === 'image') {
                 let sUrl = data.value;
                 if(sUrl && !sUrl.startsWith('http')) sUrl = '../' + sUrl.replace(/^(\.\.\/)+/, '');
-                html = `<img src="${sUrl}" style="width:24px; height:24px; object-fit:contain;">`; 
+                html = `<img src="${escapeAttr(safeUrl(sUrl))}" style="width:24px; height:24px; object-fit:contain;">`; 
             } else if (data.type === 'svg') {
-                html = `<svg viewBox="${data.viewBox}" fill="${data.fill}" stroke="${data.stroke}" stroke-width="${data.strokeWidth}" style="width:24px; height:24px">${data.value}</svg>`;
+                html = `<svg viewBox="${escapeAttr(data.viewBox)}" fill="${escapeAttr(data.fill)}" stroke="${escapeAttr(data.stroke)}" stroke-width="${escapeAttr(data.strokeWidth)}" style="width:24px; height:24px">${sanitizeSvg(data.value)}</svg>`;
             } else { 
-                html = `<i data-lucide="${data.value}"></i>`; 
+                html = `<i data-lucide="${safeIconName(data.value)}"></i>`; 
             }
             btn.innerHTML = html;
         });
@@ -855,8 +1059,8 @@ window.renderCategories = function() {
                     <i data-lucide="folder" class="w-5 h-5"></i>
                 </div>
                 <div>
-                    <h3 class="font-bold text-gray-800">${cat.name}</h3>
-                    <p class="text-xs text-gray-400 font-mono">${cat.id}</p>
+                    <h3 class="font-bold text-gray-800">${escapeHtml(cat.name)}</h3>
+                    <p class="text-xs text-gray-400 font-mono">${escapeHtml(cat.id)}</p>
                 </div>
             </div>
             <div class="flex gap-2">
@@ -880,7 +1084,7 @@ window.updateCategoryDropdown = function() {
     select.innerHTML = '';
     categories.forEach(cat => {
         const option = document.createElement('option');
-        option.value = cat.id;
+        option.value = cat.id;      // value و innerText آمنان (لا يُفسّران كـ HTML)
         option.innerText = cat.name;
         select.appendChild(option);
     });
@@ -1022,7 +1226,7 @@ async function loadStats() {
         const catsListHtml = Object.entries(postsPerCat).sort((a,b)=>b[1]-a[1]).map(([cat, count]) => {
             const catName = categories.find(c => c.id === cat)?.name || cat;
             return `<div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
-                <span class="font-bold text-gray-700">${catName}</span>
+                <span class="font-bold text-gray-700">${escapeHtml(catName)}</span>
                 <span class="bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-full text-sm">${count}</span>
             </div>`;
         }).join('');
@@ -1057,7 +1261,7 @@ async function loadStats() {
             return `<div class="flex justify-between items-center p-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
                 <div class="flex items-center gap-3 overflow-hidden">
                     <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center text-xs font-bold shrink-0">${i+1}</span>
-                    <a href="${post.url}" target="_blank" class="font-bold text-gray-700 truncate hover:text-blue-600">${post.title}</a>
+                    <a href="${escapeAttr(safeUrl(post.url))}" target="_blank" class="font-bold text-gray-700 truncate hover:text-blue-600">${sanitizeRichText(post.title)}</a>
                 </div>
                 <span class="bg-green-100 text-green-700 font-bold px-3 py-1 rounded-full text-sm shrink-0 flex items-center gap-1"><i data-lucide="eye" class="w-3 h-3"></i> ${post.views}</span>
             </div>`;
@@ -1181,7 +1385,7 @@ function renderVisitorPeriods(summary) {
         const staleHours = summary && summary.generatedAt ? (Date.now() - new Date(summary.generatedAt).getTime()) / 3600000 : 0;
         if (warnings.length) {
             note.className = 'mt-4 text-xs rounded-xl p-3 border bg-amber-50 border-amber-200 text-amber-700';
-            note.innerHTML = `⚠️ تنبيه من مصدر البيانات: ${warnings.join(' — ')}`;
+            note.innerHTML = `⚠️ تنبيه من مصدر البيانات: ${escapeHtml(warnings.join(' — '))}`;
         } else if (staleHours > 12) {
             note.className = 'mt-4 text-xs rounded-xl p-3 border bg-amber-50 border-amber-200 text-amber-700';
             note.innerHTML = `⚠️ الأرقام قديمة (${fmtRelative(summary.generatedAt)}). اضغط "جلب من Google Analytics" أو شغّل المهمة من GitHub Actions.`;
@@ -1202,7 +1406,7 @@ function renderVisitorPlaceholder(message, tone = 'gray') {
         amber: 'text-amber-600',
         red: 'text-red-500'
     };
-    grid.innerHTML = `<div class="col-span-full text-center py-6 ${tones[tone] || tones.gray} text-sm">${message}</div>`;
+    grid.innerHTML = `<div class="col-span-full text-center py-6 ${tones[tone] || tones.gray} text-sm">${escapeHtml(message)}</div>`;
     if (note) note.className = 'hidden';
 }
 
@@ -1304,7 +1508,7 @@ async function loadPhones() {
         // Populate Brand Filter
         const brands = [...new Set(cachedPhones.map(brandGroup => brandGroup.brand))].sort();
         const filterSelect = document.getElementById('filterPhoneBrand');
-        filterSelect.innerHTML = '<option value="all">الكل</option>' + brands.map(b => `<option value="${b}">${b}</option>`).join('');
+        filterSelect.innerHTML = '<option value="all">الكل</option>' + brands.map(b => `<option value="${escapeAttr(b)}">${escapeHtml(b)}</option>`).join('');
 
         renderPhonesList();
     } catch(e) {
@@ -1331,23 +1535,25 @@ function renderPhonesList() {
             div.className = 'bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col gap-4 transition-all hover:shadow-md hover:-translate-y-1 group';
             
             const imgUrl = phone.image ? (phone.image.startsWith('http') ? phone.image : `../${phone.image}`) : '../assets/images/me.jpg';
+            const specs = phone.specs || {};
+            const specCell = (icon, value) => `<div class="flex gap-1.5 items-center bg-gray-50 p-2 rounded-lg"><i data-lucide="${icon}" class="w-3.5 h-3.5 shrink-0"></i><span class="truncate" title="${escapeAttr(value || '-')}">${escapeHtml(value || '-')}</span></div>`;
             
             div.innerHTML = `
                 <div class="flex gap-4 items-center border-b pb-4">
                     <div class="w-16 h-16 bg-gray-50 rounded-lg overflow-hidden border shrink-0 flex items-center justify-center">
-                        <img src="${imgUrl}" class="max-w-full max-h-full object-contain" alt="${phone.name}" onerror="this.onerror=null; this.src='../assets/images/me.jpg';">
+                        <img src="${escapeAttr(safeUrl(imgUrl))}" class="max-w-full max-h-full object-contain" alt="${escapeAttr(phone.name)}" onerror="this.onerror=null; this.src='../assets/images/me.jpg';">
                     </div>
                     <div class="flex-1 min-w-0">
-                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">${brandGroup.brand}</span>
-                        <h3 class="font-black text-gray-900 truncate" title="${phone.name}">${phone.name}</h3>
-                        ${phone.price ? `<span class="text-sm font-bold text-green-600 mt-1 inline-block">${phone.price}</span>` : ''}
+                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">${escapeHtml(brandGroup.brand)}</span>
+                        <h3 class="font-black text-gray-900 truncate" title="${escapeAttr(phone.name)}">${escapeHtml(phone.name)}</h3>
+                        ${phone.price ? `<span class="text-sm font-bold text-green-600 mt-1 inline-block">${escapeHtml(phone.price)}</span>` : ''}
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2 text-xs text-gray-600 flex-1">
-                    <div class="flex gap-1.5 items-center bg-gray-50 p-2 rounded-lg"><i data-lucide="cpu" class="w-3.5 h-3.5 shrink-0"></i><span class="truncate" title="${phone.specs.chipset}">${phone.specs.chipset || '-'}</span></div>
-                    <div class="flex gap-1.5 items-center bg-gray-50 p-2 rounded-lg"><i data-lucide="memory-stick" class="w-3.5 h-3.5 shrink-0"></i><span class="truncate" title="${phone.specs.ram}">${phone.specs.ram || '-'}</span></div>
-                    <div class="flex gap-1.5 items-center bg-gray-50 p-2 rounded-lg"><i data-lucide="hard-drive" class="w-3.5 h-3.5 shrink-0"></i><span class="truncate" title="${phone.specs.storage}">${phone.specs.storage || '-'}</span></div>
-                    <div class="flex gap-1.5 items-center bg-gray-50 p-2 rounded-lg"><i data-lucide="battery-charging" class="w-3.5 h-3.5 shrink-0"></i><span class="truncate" title="${phone.specs.battery}">${phone.specs.battery || '-'}</span></div>
+                    ${specCell('cpu', specs.chipset)}
+                    ${specCell('memory-stick', specs.ram)}
+                    ${specCell('hard-drive', specs.storage)}
+                    ${specCell('battery-charging', specs.battery)}
                 </div>
                 <div class="flex justify-end gap-2 pt-3 mt-auto border-t">
                     <button onclick="openPhoneEditor(${bIndex}, ${pIndex})" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
@@ -1539,21 +1745,25 @@ window.loadAppStoreData = async () => {
         
         let htmlContent = decodedJson.content || '';
         
-        // Parse Apps
+        // Parse Apps — تحليل آمن بدون new Function/eval (منع تنفيذ أكواد خبيثة)
         const appsRegex = /const\s+appsData\s*=\s*(\[[\s\S]*?\])\s*;/;
         const appsMatch = appsRegex.exec(htmlContent);
+        parsedApps = [];
         if (appsMatch && appsMatch[1]) {
             try {
-                // Safely evaluate the array (it uses JS object literal syntax, not strict JSON)
-                let arrayStr = appsMatch[1];
-                // Replace keys without quotes to make it JSON-like enough for a simple eval, or just use a new Function
-                parsedApps = new Function('return ' + arrayStr)();
+                const rawApps = safeParseJsArray(appsMatch[1]);
+                parsedApps = rawApps.filter(item => item && typeof item === 'object' && !Array.isArray(item)).map(item => {
+                    const app = {};
+                    ['name', 'url', 'icon', 'store'].forEach(key => {
+                        if (item[key] !== undefined && item[key] !== null) app[key] = String(item[key]);
+                    });
+                    return app;
+                });
             } catch(e) {
-                console.error("Failed to parse appsData:", e);
+                console.error("Failed to parse appsData safely:", e);
                 parsedApps = [];
+                alert('تعذّر قراءة قائمة التطبيقات من الملف (تنسيق غير آمن أو غير صالح): ' + e.message);
             }
-        } else {
-            parsedApps = [];
         }
 
         // Parse Stores (Categories) directly from HTML blocks based on the user's template
@@ -1579,10 +1789,10 @@ window.loadAppStoreData = async () => {
 
                 if (urlMatch && nameMatch) {
                     parsedStores.push({
-                        url: urlMatch[1].trim(),
+                        url: safeUrl(urlMatch[1].trim()),
                         name: nameMatch[1].trim(),
                         desc: descMatch ? descMatch[1].trim() : '',
-                        icon: iconStr
+                        icon: String(iconStr || '').trim()
                     });
                 }
             });
@@ -1614,14 +1824,18 @@ function renderAppStoreUI() {
         const div = document.createElement('div');
         div.className = 'flex justify-between items-center p-3 bg-gray-50 border border-gray-100 rounded-lg';
         let safeIcon = store.icon;
-        let iconHtml = safeIcon ? (safeIcon.startsWith('http') || safeIcon.includes('/') ? `<img src="${safeIcon}" class="w-6 h-6 object-contain">` : `<i data-lucide="${safeIcon}" class="w-5 h-5"></i>`) : '<i data-lucide="store" class="w-5 h-5"></i>';
+        let iconHtml = safeIcon
+            ? (safeIcon.startsWith('http') || safeIcon.includes('/')
+                ? `<img src="${escapeAttr(safeUrl(safeIcon))}" class="w-6 h-6 object-contain">`
+                : `<i data-lucide="${safeIconName(safeIcon, 'store')}" class="w-5 h-5"></i>`)
+            : '<i data-lucide="store" class="w-5 h-5"></i>';
         
         div.innerHTML = `
             <div class="flex items-center gap-3">
                 <div class="bg-gray-200 p-2 rounded-lg text-gray-600 flex items-center justify-center">${iconHtml}</div>
                 <div class="flex flex-col">
-                    <span class="font-bold text-gray-800 text-sm">${store.name}</span>
-                    <a href="${store.url}" target="_blank" class="text-xs text-blue-500 hover:underline truncate max-w-[150px] dir-ltr">${store.url}</a>
+                    <span class="font-bold text-gray-800 text-sm">${escapeHtml(store.name)}</span>
+                    <a href="${escapeAttr(safeUrl(store.url))}" target="_blank" class="text-xs text-blue-500 hover:underline truncate max-w-[150px] dir-ltr">${escapeHtml(store.url)}</a>
                 </div>
             </div>
             <div class="flex gap-1 shrink-0">
@@ -1650,18 +1864,19 @@ function renderAppsTable(query = '') {
         const realIndex = parsedApps.indexOf(app);
         const tr = document.createElement('tr');
         tr.className = 'border-b hover:bg-gray-50';
-        let safeIcon = app.icon || 'https://via.placeholder.com/44?text=No+Icon';
+        let safeIcon = app.icon || '';
         if (safeIcon && !safeIcon.startsWith('http')) {
              safeIcon = safeIcon.replace(/^(\.\.\/)+/, '');
              safeIcon = '../' + safeIcon;
         }
+        safeIcon = safeUrl(safeIcon) || '../assets/images/me.jpg';
 
         tr.innerHTML = `
             <td class="px-4 py-3 flex items-center gap-3">
-                <img src="${safeIcon}" class="w-8 h-8 rounded object-contain bg-gray-100" onerror="this.onerror=null; this.src='../assets/images/me.jpg'">
-                <span class="font-bold text-gray-800" dir="ltr">${app.name}</span>
+                <img src="${escapeAttr(safeIcon)}" class="w-8 h-8 rounded object-contain bg-gray-100" onerror="this.onerror=null; this.src='../assets/images/me.jpg'">
+                <span class="font-bold text-gray-800" dir="ltr">${escapeHtml(app.name)}</span>
             </td>
-            <td class="px-4 py-3"><a href="${app.url}" target="_blank" class="text-blue-500 hover:underline dir-ltr text-xs inline-block truncate max-w-[150px]">${app.url || ''}</a></td>
+            <td class="px-4 py-3"><a href="${escapeAttr(safeUrl(app.url))}" target="_blank" class="text-blue-500 hover:underline dir-ltr text-xs inline-block truncate max-w-[150px]">${escapeHtml(app.url || '')}</a></td>
             <td class="px-4 py-3">
                 <div class="flex gap-2">
                     <button onclick="editApp(${realIndex})" class="p-1.5 text-blue-600 hover:bg-blue-100 rounded"><i data-lucide="edit" class="w-4 h-4"></i></button>
@@ -1793,13 +2008,15 @@ window.saveAppStoreData = async () => {
         let htmlContent = decodedJson.content || '';
 
         // 1. Serialize Apps
+        // تهريب صحيح للقيم + منع كسر وسم <script> داخل الملف المولَّد
+        const jsString = (value) => JSON.stringify(String(value)).replace(/<\//g, '<\\/');
         const serializeArray = (arr) => {
             return '[\n' + arr.map(item => {
                 let parts = [];
-                if(item.name) parts.push(`name: "${item.name.replace(/"/g, '\\"')}"`);
-                if(item.url) parts.push(`url: "${item.url.replace(/"/g, '\\"')}"`);
-                if(item.icon) parts.push(`icon: "${item.icon.replace(/"/g, '\\"')}"`);
-                if(item.store) parts.push(`store: "${item.store.replace(/"/g, '\\"')}"`);
+                if(item.name) parts.push(`name: ${jsString(item.name)}`);
+                if(item.url) parts.push(`url: ${jsString(item.url)}`);
+                if(item.icon) parts.push(`icon: ${jsString(item.icon)}`);
+                if(item.store) parts.push(`store: ${jsString(item.store)}`);
                 return `            { ${parts.join(', ')} }`;
             }).join(',\n') + '\n        ]';
         };
@@ -1820,12 +2037,12 @@ window.saveAppStoreData = async () => {
                 const titleColor = isFirst ? "text-blue-900 dark:text-blue-300" : "text-purple-900 dark:text-purple-300";
                 const glowColor = isFirst ? "bg-blue-400" : "bg-purple-400";
 
-                let iconDisplay = `<i data-lucide="${store.icon || 'shopping-cart'}" class="w-7 h-7 sm:w-12 sm:h-12 ${iconColor}"></i>`;
+                let iconDisplay = `<i data-lucide="${safeIconName(store.icon, 'shopping-cart')}" class="w-7 h-7 sm:w-12 sm:h-12 ${iconColor}"></i>`;
                 if (store.icon && (store.icon.startsWith('http') || store.icon.includes('/'))) {
-                    iconDisplay = `<img src="${store.icon}" class="w-7 h-7 sm:w-12 sm:h-12 object-contain" alt="Store Icon">`;
+                    iconDisplay = `<img src="${escapeAttr(safeUrl(store.icon))}" class="w-7 h-7 sm:w-12 sm:h-12 object-contain" alt="Store Icon">`;
                 }
 
-                generatedHtml += `        <a href="${store.url}" target="_self" class="group h-full block">
+                generatedHtml += `        <a href="${escapeAttr(safeUrl(store.url))}" target="_self" class="group h-full block">
             <div class="bg-gradient-to-br ${bgGradient} dark:border-slate-700 rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col items-center justify-center text-center cursor-pointer">
                 <div class="mb-3 sm:mb-6 relative">
                     <div class="absolute inset-0 ${glowColor} blur-2xl opacity-20 group-hover:opacity-30 transition-opacity rounded-full"></div>
@@ -1833,8 +2050,8 @@ window.saveAppStoreData = async () => {
                         ${iconDisplay}
                     </div>
                 </div>
-                <h3 class="font-black text-sm sm:text-2xl ${titleColor} mb-1 sm:mb-2">${store.name}</h3>
-                <p class="text-[10px] sm:text-sm text-gray-600 dark:text-gray-400">${store.desc || ''}</p>
+                <h3 class="font-black text-sm sm:text-2xl ${titleColor} mb-1 sm:mb-2">${escapeHtml(store.name)}</h3>
+                <p class="text-[10px] sm:text-sm text-gray-600 dark:text-gray-400">${escapeHtml(store.desc || '')}</p>
             </div>
         </a>\n`;
             });
