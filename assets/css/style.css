@@ -704,3 +704,16 @@ main > .ad-container:first-child {
 #news-ticker-bar {
     margin-top: 0 !important;
 }
+
+/* Safeguard against AdSense massive vertical blank spaces on mobile */
+.ad-placement-wrapper ins.adsbygoogle {
+    max-height: 350px !important;
+    overflow: hidden !important;
+}
+
+/* Allow taller ads only on larger desktop screens if necessary */
+@media (min-width: 768px) {
+    .ad-placement-wrapper ins.adsbygoogle {
+        max-height: 600px !important;
+    }
+}

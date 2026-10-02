@@ -11,12 +11,12 @@ export const AdSenseUnit: React.FC = () => {
   }, []);
 
   return (
-    <div className="my-8 text-center overflow-hidden">
+    <div className="my-8 text-center overflow-hidden ad-placement-wrapper">
       <span className="text-xs text-gray-400 block mb-2">إعلان</span>
       <ins className="adsbygoogle block"
            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
            data-ad-slot="XXXXXXXXXX"
-           data-ad-format="auto"
+           data-ad-format="horizontal, rectangle"
            data-full-width-responsive="true"
            style={{ display: 'block' }}></ins>
     </div>
