@@ -105,6 +105,7 @@ window.switchTab = (tabName) => {
     if (tabName === 'settings') loadSettings();
     if (tabName === 'stats') loadStats();
     if (tabName === 'phones') loadPhones();
+    if (tabName === 'appstore') loadAppStoreData(); // كان ناقصاً: القسم يظهر فارغاً حتى الضغط على "تحديث"
 };
 
 async function compressAndConvertToWebP(file) {
@@ -1071,7 +1072,219 @@ async function loadStats() {
         console.error(e);
         loader.innerHTML = '<p class="text-red-500">حدث خطأ في جلب البيانات. تأكد من إعدادات الاتصال.</p>';
     }
+
+    // أرقام الزوار (24س/48س/شهر/سنة) تُجلب بشكل مستقل حتى لا يُعطّل فشلها بقية الإحصائيات
+    loadVisitorStats();
 }
+
+/* =======================================================================
+ *  زوار الموقع حسب الفترة: 24 ساعة / 48 ساعة / شهر / سنة
+ *  المصدر: content/data/analytics-summary.json (يُحدّثه GitHub Actions من GA4)
+ * ======================================================================= */
+const VISITOR_PERIODS = [
+    { key: 'h24',  label: 'آخر 24 ساعة',          icon: 'clock',         bar: 'bg-blue-500',    text: 'text-blue-600',    soft: 'bg-blue-50' },
+    { key: 'h48',  label: 'آخر 48 ساعة',          icon: 'activity',      bar: 'bg-indigo-500',  text: 'text-indigo-600',  soft: 'bg-indigo-50' },
+    { key: 'd30',  label: 'خلال شهر (30 يوماً)',    icon: 'calendar',      bar: 'bg-purple-500',  text: 'text-purple-600',  soft: 'bg-purple-50' },
+    { key: 'd365', label: 'خلال سنة (365 يوماً)',   icon: 'trending-up',   bar: 'bg-emerald-500', text: 'text-emerald-600', soft: 'bg-emerald-50' }
+];
+
+let visitorPeriodsData = null;
+
+function fmtNum(n) { return Number(n || 0).toLocaleString('en-US'); }
+
+function fmtDateTime(iso) {
+    if (!iso) return '';
+    try {
+        const d = new Date(iso);
+        if (isNaN(d.getTime())) return '';
+        const datePart = d.toLocaleDateString('en-GB', { month: '2-digit', day: '2-digit' });
+        const timePart = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
+        return `${datePart} ${timePart}`;
+    } catch (e) { return ''; }
+}
+
+function fmtRelative(iso) {
+    if (!iso) return '';
+    const diffMin = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
+    if (isNaN(diffMin)) return '';
+    if (diffMin < 2) return 'الآن';
+    if (diffMin < 60) return `قبل ${diffMin} دقيقة`;
+    const hours = Math.round(diffMin / 60);
+    if (hours < 24) return `قبل ${hours} ساعة`;
+    const days = Math.round(hours / 24);
+    return `قبل ${days} يوم`;
+}
+
+function visitorCardHtml(meta, period, maxUsers) {
+    if (!period) {
+        return `<div class="border border-dashed border-gray-200 rounded-2xl p-4 text-center text-gray-400 text-xs">لا توجد بيانات لهذه الفترة بعد.</div>`;
+    }
+    const users = period.users || 0;
+    const views = period.views || 0;
+    const sessions = period.sessions || 0;
+    const newUsers = period.newUsers || 0;
+    const width = maxUsers > 0 ? Math.max(2, Math.round((users / maxUsers) * 100)) : 0;
+
+    let changeHtml = '';
+    if (typeof period.change === 'number' && isFinite(period.change)) {
+        const pct = Math.round(period.change * 100);
+        if (pct > 0) changeHtml = `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-green-50 text-green-600 mb-1">▲ ${pct}%</span>`;
+        else if (pct < 0) changeHtml = `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-50 text-red-500 mb-1">▼ ${Math.abs(pct)}%</span>`;
+        else changeHtml = `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 mb-1">= 0%</span>`;
+    }
+
+    let rangeHtml = '';
+    if (period.start && period.end) {
+        rangeHtml = `من ${fmtDateTime(new Date(period.start).toISOString())} إلى ${fmtDateTime(new Date(period.end).toISOString())}`;
+    }
+
+    return `
+        <div class="border border-gray-100 rounded-2xl p-4 bg-gray-50/60 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-gray-500">${meta.label}</span>
+                <span class="w-8 h-8 rounded-lg ${meta.soft} ${meta.text} flex items-center justify-center"><i data-lucide="${meta.icon}" class="w-4 h-4"></i></span>
+            </div>
+            <div class="flex items-end gap-2 flex-wrap">
+                <span class="text-3xl font-black text-gray-800 leading-none">${fmtNum(users)}</span>
+                <span class="text-[11px] text-gray-400 mb-0.5">زائر</span>
+                ${changeHtml}
+            </div>
+            <div class="mt-3 h-1.5 bg-gray-200 rounded-full overflow-hidden"><div class="h-full ${meta.bar}" style="width:${width}%"></div></div>
+            <div class="mt-2 text-[11px] text-gray-500 flex justify-between gap-2 flex-wrap">
+                <span>المشاهدات: <b>${fmtNum(views)}</b></span>
+                <span>الجلسات: <b>${fmtNum(sessions)}</b></span>
+            </div>
+            <div class="mt-1 text-[10px] text-gray-400">منهم ${fmtNum(newUsers)} زائر جديد</div>
+            ${rangeHtml ? `<div class="mt-1 text-[10px] text-gray-400">${rangeHtml}</div>` : ''}
+            ${period.partial ? `<div class="mt-1 text-[10px] text-amber-500">⚠ ساعات ناقصة في هذه الفترة</div>` : ''}
+        </div>`;
+}
+
+function renderVisitorPeriods(summary) {
+    const grid = document.getElementById('visitorPeriodsGrid');
+    const note = document.getElementById('visitorPeriodsNote');
+    const updated = document.getElementById('visitorUpdatedAt');
+    if (!grid) return;
+
+    const periods = (summary && summary.periods) || {};
+    const maxUsers = Math.max(0, ...VISITOR_PERIODS.map(p => (periods[p.key] ? periods[p.key].users || 0 : 0)));
+
+    grid.innerHTML = VISITOR_PERIODS.map(meta => visitorCardHtml(meta, periods[meta.key], maxUsers)).join('');
+
+    if (updated) {
+        const rel = fmtRelative(summary && summary.generatedAt);
+        updated.textContent = rel ? `آخر تحديث: ${rel}` : '';
+    }
+
+    if (note) {
+        const warnings = (summary && summary.warnings) || [];
+        const staleHours = summary && summary.generatedAt ? (Date.now() - new Date(summary.generatedAt).getTime()) / 3600000 : 0;
+        if (warnings.length) {
+            note.className = 'mt-4 text-xs rounded-xl p-3 border bg-amber-50 border-amber-200 text-amber-700';
+            note.innerHTML = `⚠️ تنبيه من مصدر البيانات: ${warnings.join(' — ')}`;
+        } else if (staleHours > 12) {
+            note.className = 'mt-4 text-xs rounded-xl p-3 border bg-amber-50 border-amber-200 text-amber-700';
+            note.innerHTML = `⚠️ الأرقام قديمة (${fmtRelative(summary.generatedAt)}). اضغط "جلب من Google Analytics" أو شغّل المهمة من GitHub Actions.`;
+        } else {
+            note.className = 'hidden';
+        }
+    }
+
+    if (window.lucide) lucide.createIcons();
+}
+
+function renderVisitorPlaceholder(message, tone = 'gray') {
+    const grid = document.getElementById('visitorPeriodsGrid');
+    const note = document.getElementById('visitorPeriodsNote');
+    if (!grid) return;
+    const tones = {
+        gray: 'text-gray-400',
+        amber: 'text-amber-600',
+        red: 'text-red-500'
+    };
+    grid.innerHTML = `<div class="col-span-full text-center py-6 ${tones[tone] || tones.gray} text-sm">${message}</div>`;
+    if (note) note.className = 'hidden';
+}
+
+async function loadVisitorStats() {
+    renderVisitorPlaceholder('جاري تحميل أرقام الزوار...');
+    try {
+        const file = await api.get('content/data/analytics-summary.json');
+        const summary = JSON.parse(decodeURIComponent(escape(atob(file.content))));
+        visitorPeriodsData = summary;
+        renderVisitorPeriods(summary);
+    } catch (e) {
+        console.warn('Visitor summary not available:', e);
+        visitorPeriodsData = null;
+        renderVisitorPlaceholder(
+            'لا يوجد ملف أرقام زوار بعد (content/data/analytics-summary.json). سيُنشأ تلقائياً عند تشغيل مهمة التحليلات — أو اضغط "جلب من Google Analytics".',
+            'amber'
+        );
+    }
+}
+
+/** يعيد قراءة ملف الأرقام من GitHub (بدون تشغيل GA4) */
+window.refreshVisitorStats = () => loadVisitorStats();
+
+/** يشغّل مهمة GitHub Actions لجلب أحدث الأرقام من GA4 ثم يعيد القراءة تلقائياً */
+window.dispatchAnalyticsWorkflow = async () => {
+    const btn = document.getElementById('btnDispatchAnalytics');
+    if (!ghConfig.owner || !ghConfig.repo || !ghConfig.token) {
+        alert('يجب ربط المستودع أولاً من "إعدادات الاتصال".');
+        return;
+    }
+    if (!confirm('سيتم تشغيل مهمة "Analytics & Site Build" على GitHub لجلب أحدث أرقام الزوار من Google Analytics.\n\nقد تستغرق 1-3 دقائق، وسيتم تحديث الأرقام هنا تلقائياً.\n\nهل تريد المتابعة؟')) return;
+
+    const original = btn ? btn.innerHTML : '';
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i> جاري التشغيل...'; lucide.createIcons(); }
+
+    try {
+        const res = await fetch(`https://api.github.com/repos/${ghConfig.owner}/${ghConfig.repo}/actions/workflows/analytics.yml/dispatches`, {
+            method: 'POST',
+            headers: { ...api.headers(), 'Accept': 'application/vnd.github+json' },
+            body: JSON.stringify({ ref: 'main' })
+        });
+
+        if (res.status === 204) {
+            showToast('تم تشغيل المهمة ✓ — ستظهر الأرقام الجديدة خلال دقائق');
+            pollVisitorStats(5);
+        } else if (res.status === 401) {
+            alert('التوكن غير صالح أو منتهي الصلاحية. حدّث التوكن من "إعدادات الاتصال".');
+        } else if (res.status === 403 || res.status === 404) {
+            alert('تعذّر تشغيل المهمة: التوكن الحالي لا يملك صلاحية Actions (workflow / actions:write).\n\nيمكنك تشغيل المهمة يدوياً من تبويب Actions في GitHub.');
+        } else {
+            alert('تعذّر تشغيل المهمة (رمز ' + res.status + ').');
+        }
+    } catch (e) {
+        console.error(e);
+        alert('خطأ في الاتصال بـ GitHub: ' + e.message);
+    } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = original; lucide.createIcons(); }
+    }
+};
+
+/** ينتظر حتى يتغيّر generatedAt في ملف الأرقام (بحد أقصى maxTries محاولة كل دقيقة) */
+function pollVisitorStats(maxTries = 5) {
+    const previousAt = visitorPeriodsData && visitorPeriodsData.generatedAt;
+    let tries = 0;
+    const tick = async () => {
+        tries++;
+        try {
+            const file = await api.get('content/data/analytics-summary.json');
+            const summary = JSON.parse(decodeURIComponent(escape(atob(file.content))));
+            if (summary.generatedAt && summary.generatedAt !== previousAt) {
+                visitorPeriodsData = summary;
+                renderVisitorPeriods(summary);
+                showToast('تم تحديث أرقام الزوار ✓');
+                return;
+            }
+        } catch (e) { /* تجاهل وأعد المحاولة */ }
+        if (tries < maxTries) setTimeout(tick, 60000);
+        else loadVisitorStats();
+    };
+    setTimeout(tick, 45000);
+}
+
 
 // --- PHONES LOGIC ---
 let cachedPhones = [];
