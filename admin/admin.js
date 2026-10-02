@@ -1,8 +1,43 @@
 // --- Configuration & State ---
+// التخزين الآمن: التوكن يُحفظ في sessionStorage افتراضياً (يُمحى بإغلاق التبويب)،
+// ولا يُحفظ في localStorage إلا إذا اختار المستخدم "تذكّرني على هذا الجهاز".
+const GH_KEYS = { owner: 'gh_owner', repo: 'gh_repo', token: 'gh_token' };
+
+/** يقرأ إعداداً من الجلسة أولاً ثم من التخزين الدائم (السلوك القديم مدعوم) */
+function readSetting(key) {
+    try {
+        return sessionStorage.getItem(key) || localStorage.getItem(key) || '';
+    } catch (e) { return ''; }
+}
+
+/** يكتب إعداداً: دائم (localStorage) أو للجلسة فقط (sessionStorage) */
+function writeSetting(key, value, persist = false) {
+    try {
+        if (persist) {
+            localStorage.setItem(key, value);
+            sessionStorage.removeItem(key);
+        } else {
+            sessionStorage.setItem(key, value);
+            localStorage.removeItem(key);
+        }
+    } catch (e) { console.warn('تعذّر حفظ الإعداد', e); }
+}
+
+/** يمسح إعداداً من التخزينين معاً */
+function removeSetting(key) {
+    try { localStorage.removeItem(key); } catch (e) {}
+    try { sessionStorage.removeItem(key); } catch (e) {}
+}
+
+/** هل الرمز محفوظ بشكل دائم على هذا الجهاز؟ */
+function isTokenPersisted() {
+    try { return !!localStorage.getItem(GH_KEYS.token); } catch (e) { return false; }
+}
+
 let ghConfig = {
-    owner: localStorage.getItem('gh_owner') || '',
-    repo: localStorage.getItem('gh_repo') || '',
-    token: localStorage.getItem('gh_token') || ''
+    owner: readSetting(GH_KEYS.owner),
+    repo: readSetting(GH_KEYS.repo),
+    token: readSetting(GH_KEYS.token)
 };
 
 let cachedPosts = [];
@@ -284,10 +319,216 @@ function safeParseJsArray(src) {
     return result;
 }
 
+/* ============================================================================
+ *  🔐 إدارة جلسة GitHub (تسجيل الدخول / الخروج + التحقق من الرمز)
+ * ============================================================================ */
+
+/** يكشف نوع رمز الوصول من بادئته */
+function detectTokenKind(token) {
+    const t = String(token || '').trim();
+    if (!t) return 'empty';
+    if (t.startsWith('github_pat_')) return 'fine-grained';  // النوع الموصى به
+    if (t.startsWith('ghp_')) return 'classic';
+    if (/^(gho_|ghu_|ghs_|ghr_)/.test(t)) return 'oauth';
+    if (/^[0-9a-f]{40}$/i.test(t)) return 'classic-legacy';
+    return 'unknown';
+}
+
+/** رسائل إرشاد حسب نوع الرمز */
+const TOKEN_KIND_INFO = {
+    'fine-grained': { tone: 'ok', label: 'Fine-grained PAT (مُقيَّد الصلاحيات) ✅' },
+    'classic': { tone: 'danger', label: 'Classic Token (صلاحية repo كاملة على كل مستودعاتك) ⚠️' },
+    'classic-legacy': { tone: 'danger', label: 'Classic Token قديم (صلاحيات واسعة) ⚠️' },
+    'oauth': { tone: 'warn', label: 'رمز OAuth/تطبيق — ليس Fine-grained PAT' },
+    'unknown': { tone: 'danger', label: 'تنسيق غير معروف' }
+};
+
+function renderGhValidation(tone, html) {
+    const box = document.getElementById('ghValidationBox');
+    if (!box) return;
+    const tones = {
+        ok: 'bg-green-50 border-green-200 text-green-800',
+        warn: 'bg-amber-50 border-amber-200 text-amber-800',
+        danger: 'bg-red-50 border-red-200 text-red-700',
+        info: 'bg-gray-50 border-gray-200 text-gray-700'
+    };
+    box.className = `text-xs rounded-xl p-3 border leading-relaxed ${tones[tone] || tones.info}`;
+    box.innerHTML = html;
+}
+
+/**
+ * يتحقق من الرمز مع GitHub مباشرة من المتصفح:
+ *  • صلاحية الرمز (401 ⇒ غير صالح)
+ *  • نوعه والصلاحيات الممنوحة له (X-OAuth-Scopes للـ Classic)
+ *  • الوصول إلى المستودع وصلاحية الكتابة عليه
+ */
+async function verifyGithubConnection({ owner, repo, token }) {
+    const headers = { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github+json' };
+
+    let userRes;
+    try {
+        userRes = await fetch('https://api.github.com/user', { headers });
+    } catch (e) {
+        return { ok: false, kind: 'network', message: 'تعذّر الاتصال بـ GitHub. تحقّق من اتصال الإنترنت ثم أعد المحاولة.' };
+    }
+
+    if (userRes.status === 401) {
+        return { ok: false, kind: 'invalid', message: 'الرمز غير صالح أو منتهي الصلاحية أو تم إبطاله من GitHub.' };
+    }
+    if (userRes.status === 403) {
+        return { ok: false, kind: 'blocked', message: 'رفض GitHub الطلب (403) — قد يكون الرمز محظوراً أو تجاوزت حد الطلبات.' };
+    }
+    if (!userRes.ok) {
+        return { ok: false, kind: 'error', message: `استجابة غير متوقعة من GitHub (${userRes.status}).` };
+    }
+
+    const user = await userRes.json().catch(() => ({}));
+    let scopes = '';
+    try { scopes = String(userRes.headers.get('x-oauth-scopes') || '').trim(); } catch (e) {}
+
+    const repoRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`, { headers });
+    if (repoRes.status === 404) {
+        return {
+            ok: false, kind: 'no-repo', login: user.login, scopes,
+            message: `الرمز صحيح (الحساب: ${user.login}) لكن لا يملك وصولاً إلى المستودع <span class="dir-ltr">${escapeHtml(owner)}/${escapeHtml(repo)}</span>. تأكد من تحديد المستودع في «Repository access» عند إنشاء الرمز.`
+        };
+    }
+    if (!repoRes.ok) {
+        return { ok: false, kind: 'repo-error', login: user.login, scopes, message: `تعذّر قراءة بيانات المستودع (${repoRes.status}).` };
+    }
+
+    const repoData = await repoRes.json().catch(() => ({}));
+    const canPush = !!(repoData.permissions && repoData.permissions.push);
+
+    return {
+        ok: canPush,
+        kind: canPush ? 'ok' : 'read-only',
+        login: user.login,
+        scopes,
+        private: !!repoData.private,
+        defaultBranch: repoData.default_branch || 'main',
+        message: canPush
+            ? ''
+            : 'الرمز يملك وصولاً للقراءة فقط على هذا المستودع. امنحه صلاحية <b>Contents: Read and write</b> ثم أعد المحاولة.'
+    };
+}
+
+/** يعرض شاشة الدخول (تُستدعى عند غياب الرمز أو بعد تسجيل الخروج) */
+function showLoginModal() {
+    const modal = document.getElementById('ghModal');
+    if (!modal) return;
+    const ownerEl = document.getElementById('ghOwner');
+    const repoEl = document.getElementById('ghRepo');
+    const tokenEl = document.getElementById('ghToken');
+    if (ownerEl) ownerEl.value = ghConfig.owner || '';
+    if (repoEl) repoEl.value = ghConfig.repo || '';
+    if (tokenEl) tokenEl.value = '';              // لا يُعاد أبداً تعبئة الرمز في الواجهة
+    const box = document.getElementById('ghValidationBox');
+    if (box) box.className = 'hidden';
+    const cancel = document.getElementById('ghCancelBtn');
+    if (cancel) cancel.style.display = ghConfig.token ? '' : 'none';
+    modal.classList.remove('hidden');
+    lucide.createIcons();
+}
+
+function hideLoginModal() {
+    const modal = document.getElementById('ghModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+window.toggleTokenVisibility = () => {
+    const input = document.getElementById('ghToken');
+    if (!input) return;
+    input.type = input.type === 'password' ? 'text' : 'password';
+};
+
+/** يحدّث مؤشر حالة الاتصال في الشريط الجانبي */
+function renderConnectionStatus() {
+    const dot = document.getElementById('ghStatusDot');
+    const text = document.getElementById('ghStatusText');
+    const sub = document.getElementById('ghStatusSub');
+    const btn = document.getElementById('btnDisconnect');
+    const btnMobile = document.getElementById('btnDisconnectMobile');
+    if (!text) return;
+
+    const connected = !!ghConfig.token;
+    if (dot) dot.className = `w-2 h-2 rounded-full mt-1 shrink-0 ${connected ? 'bg-green-500' : 'bg-gray-300'}`;
+    text.textContent = connected ? 'متصل' : 'غير متصل';
+    text.className = `font-bold truncate ${connected ? 'text-green-700' : 'text-gray-600'}`;
+    if (sub) sub.textContent = connected ? `${ghConfig.owner}/${ghConfig.repo}` : 'سجّل الدخول للمتابعة';
+    if (btn) btn.style.display = connected ? 'flex' : 'none';
+    if (btnMobile) btnMobile.style.display = connected ? '' : 'none';
+}
+
+/**
+ * يمسح كل آثار الرمز والبيانات الحسّاسة من المتصفح ومن الذاكرة ومن الواجهة.
+ * @returns {boolean} نجاح المسح
+ */
+function clearGithubSession() {
+    // 1) مسح الرمز مسحاً كاملاً من التخزين الدائم والمؤقت (localStorage + sessionStorage)
+    removeSetting(GH_KEYS.token);
+
+    // 2) الإبقاء على اسم المستخدم/المستودع (بيانات غير حسّاسة) لتسهيل الدخول التالي
+    if (ghConfig.owner) writeSetting(GH_KEYS.owner, ghConfig.owner, true);
+    if (ghConfig.repo) writeSetting(GH_KEYS.repo, ghConfig.repo, true);
+
+    // 3) الذاكرة: إسقاط نسخة الرمز فقط + كاش المحتوى
+    ghConfig = { owner: ghConfig.owner, repo: ghConfig.repo, token: '' };
+    try { api._branch = null; } catch (e) {}
+    cachedPosts = []; cachedChannels = []; categories = []; cachedAbout = {};
+    currentEditingPost = null; iconPickerTarget = null;
+    parsedApps = []; parsedStores = []; storeDataRaw = null;
+    cachedPhones = []; visitorPeriodsData = null;
+
+    // 3) الواجهة: حقول الإدخال والمحتوى المعروض
+    const tokenEl = document.getElementById('ghToken');
+    if (tokenEl) { tokenEl.value = ''; tokenEl.type = 'password'; }
+    ['postsList', 'channelsList', 'categoriesList', 'phonesList', 'statsContent',
+     'storesList', 'appsTableBody', 'statCatsList', 'statTopPostsList', 'visitorPeriodsGrid']
+        .forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
+
+    // 4) إغلاق كل المحرّرات والنوافذ المفتوحة
+    ['postEditor', 'phoneEditor', 'categoryEditor', 'appModal', 'storeModal', 'iconPickerModal']
+        .forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); });
+    document.body.style.overflow = '';
+
+    renderConnectionStatus();
+    return true;
+}
+
+/** تسجيل الخروج / فصل الاتصال: مسح آمن ثم العودة لشاشة الدخول */
+window.disconnectGithub = () => {
+    if (!confirm('سيتم مسح رمز الوصول (Token) نهائياً من هذا المتصفح ومسح المحتوى المحمّل في الذاكرة، وسجّل الخروج فوراً.\n\n(يبقى اسم المستودع فقط — بيانات غير حسّاسة — لتسهيل الدخول التالي).\n\nهل تريد المتابعة؟')) return;
+
+    const tokenEl = document.getElementById('ghToken');
+    if (tokenEl) tokenEl.value = '';   // مسح الحقل قبل أي خطوة أخرى
+    clearGithubSession();
+    showToast('تم تسجيل الخروج ومسح رمز الوصول ✓');
+
+    // إعادة تحميل نظيفة للصفحة ⇒ تظهر شاشة إدخال الرمز مباشرة بلا أي بقايا في الذاكرة
+    setTimeout(() => {
+        try {
+            location.replace(location.pathname + '?logged_out=1');
+        } catch (e) {
+            showLoginModal(); // بديل آمن إن تعذّرت إعادة التوجيه
+        }
+    }, 700);
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     initIconPicker();
+    renderConnectionStatus();
+
+    // رسالة تأكيد الخروج بعد إعادة التوجيه + تنظيف الرابط
+    try {
+        if (location.search.indexOf('logged_out=1') !== -1) {
+            showToast('تم تسجيل الخروج ومسح رمز الوصول من هذا المتصفح');
+            history.replaceState({}, '', location.pathname);
+        }
+    } catch (e) {}
+
     if (!ghConfig.token) {
-        document.getElementById('ghModal').classList.remove('hidden');
+        showLoginModal();
     } else {
         loadPosts();
         loadCategories();
@@ -310,6 +551,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.switchTab = (tabName) => {
+    if (!ghConfig.token) { showLoginModal(); return; }  // لا بيانات بدون تسجيل دخول
     document.querySelectorAll('aside button').forEach(btn => btn.classList.remove('tab-active'));
     document.getElementById(`nav-${tabName}`).classList.add('tab-active');
     
@@ -1131,8 +1373,103 @@ window.saveSettingsData = async () => {
     btn.innerText = 'حفظ التغييرات';
 };
 
-window.toggleGithubSettings = () => document.getElementById('ghModal').classList.toggle('hidden');
-window.saveGhSettings = () => { localStorage.setItem('gh_owner', document.getElementById('ghOwner').value.trim()); localStorage.setItem('gh_repo', document.getElementById('ghRepo').value.trim()); localStorage.setItem('gh_token', document.getElementById('ghToken').value.trim()); location.reload(); };
+window.toggleGithubSettings = () => {
+    const modal = document.getElementById('ghModal');
+    if (!modal) return;
+    if (modal.classList.contains('hidden')) showLoginModal();
+    else hideLoginModal();
+};
+
+/**
+ * حفظ بيانات الاتصال بعد التحقق منها مع GitHub.
+ * - يرفض تنسيقات الرموز غير المعروفة، ويحذّر بشدة من Classic Token
+ * - يتحقق من صلاحية الرمز ومن صلاحية الكتابة على المستودع
+ */
+window.saveGhSettings = async () => {
+    const btn = document.getElementById('btnSaveGh');
+    const owner = document.getElementById('ghOwner').value.trim();
+    const repo = document.getElementById('ghRepo').value.trim();
+    const token = document.getElementById('ghToken').value.trim();
+    const remember = !!document.getElementById('ghRemember')?.checked;
+    const original = btn ? btn.innerHTML : '';
+
+    if (!owner || !repo) { renderGhValidation('danger', 'يرجى إدخال اسم المستخدم واسم المستودع.'); return; }
+    if (!token) { renderGhValidation('danger', 'يرجى إدخال رمز الوصول (Token).'); return; }
+
+    const kind = detectTokenKind(token);
+    const info = TOKEN_KIND_INFO[kind] || TOKEN_KIND_INFO.unknown;
+
+    // رفض التنسيقات غير المعروفة (لا تطابق أي نوع رمز معروف من GitHub)
+    if (kind === 'unknown') {
+        renderGhValidation('danger',
+            `❌ <b>تنسيق الرمز غير معروف.</b><br>الرموز الصحيحة تبدأ بـ <span class="dir-ltr">github_pat_</span> (Fine-grained) أو <span class="dir-ltr">ghp_</span> (Classic).<br>تأكد من نسخ الرمز كاملاً وبدون مسافات.`);
+        return;
+    }
+
+    // تحذير صارم من Classic Token (يمنح repo كامل على كل المستودعات)
+    if (kind === 'classic' || kind === 'classic-legacy' || kind === 'oauth') {
+        const proceed = confirm(
+            '⚠️ تحذير أمني مهم\n\n' +
+            'هذا الرمز ليس Fine-grained PAT. النوع الحالي: ' + info.label + '\n\n' +
+            'الـ Classic Token يمنح صلاحيات واسعة (repo) على كل مستودعاتك، وهو أخطر بكثير من المطلوب لهذه اللوحة ' +
+            '(المطلوب فقط: Contents: Read and write على مستودع الموقع).\n\n' +
+            'الخطوات الموصى بها:\n' +
+            '1) GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens\n' +
+            '2) Repository access: Only select repositories → مستودع الموقع\n' +
+            '3) Repository permissions → Contents: Read and write\n\n' +
+            'هل تريد المتابعة بالرمز الحالي رغم ذلك؟'
+        );
+        if (!proceed) {
+            renderGhValidation('warn',
+                '⏸️ تم إيقاف الاتصال. أنشئ <b>Fine-grained PAT</b> بصلاحية <span class="dir-ltr">Contents: Read and write</span> ثم أعد المحاولة — ' +
+                '<a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer" class="font-bold underline">إنشاء رمز الآن</a>.');
+            return;
+        }
+    }
+
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> جاري التحقق من GitHub...'; lucide.createIcons(); }
+    renderGhValidation('info', '⏳ جاري التحقق من الرمز وطالب الوصول للمستودع...');
+
+    try {
+        const result = await verifyGithubConnection({ owner, repo, token });
+
+        if (!result.ok) {
+            renderGhValidation('danger', '❌ ' + result.message);
+            return;
+        }
+
+        // حفظ آمن: دائم فقط عند اختيار "تذكّرني"، وإلا فالجلسة الحالية فقط
+        writeSetting(GH_KEYS.owner, owner, true);
+        writeSetting(GH_KEYS.repo, repo, true);
+        writeSetting(GH_KEYS.token, token, remember);
+
+        const kindNote = (kind === 'fine-grained')
+            ? '<br>نوع الرمز: <b>Fine-grained PAT</b> ✅ (الأكثر أماناً)'
+            : '<br>نوع الرمز: <b>' + info.label + '</b> — يُنصح بالتحويل إلى Fine-grained PAT.';
+        const scopeNote = result.scopes
+            ? '<br>صلاحيات الرمز المُعلنة من GitHub: <span class="dir-ltr">' + escapeHtml(result.scopes) + '</span>' +
+              (result.scopes.split(/,\s*/).includes('repo') ? ' <b>⚠️ تتضمن repo (واسعة جداً)</b>' : '')
+            : '';
+        const storeNote = remember
+            ? '<br>التخزين: <b>محفوظ على هذا الجهاز</b> (localStorage) حتى تسجيل الخروج.'
+            : '<br>التخزين: <b>لجلسة هذا التبويب فقط</b> (sessionStorage) ويُمحى عند إغلاقه.';
+
+        renderGhValidation('ok',
+            '✅ <b>تم التحقق بنجاح!</b><br>الحساب: <span class="dir-ltr">' + escapeHtml(result.login || '') + '</span>' +
+            ' — المستودع: <span class="dir-ltr">' + escapeHtml(owner + '/' + repo) + '</span>' +
+            ' <span class="text-green-600">(صلاحية الكتابة متاحة)</span>' +
+            kindNote + scopeNote + storeNote +
+            '<br><br>جارٍ تحميل لوحة التحكم...');
+
+        setTimeout(() => location.reload(), 1200);
+
+    } catch (e) {
+        console.error(e);
+        renderGhValidation('danger', '❌ خطأ غير متوقع أثناء التحقق: ' + escapeHtml(e.message || String(e)));
+    } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = original; lucide.createIcons(); }
+    }
+};
 
 function arabicToLatin(str) { if(!str) return ''; const map = { 'أ':'a','إ':'e','آ':'a','ا':'a','ب':'b','ت':'t','ث':'th','ج':'j','ح':'h','خ':'kh','د':'d','ذ':'th','ر':'r','ز':'z','س':'s','ش':'sh','ص':'s','ض':'d','ط':'t','ظ':'z','ع':'a','غ':'gh','ف':'f','ق':'q','ك':'k','ل':'l','م':'m','ن':'n','ه':'h','و':'w','ي':'y','ى':'a','ة':'h','ء':'a','ئ':'e','ؤ':'o', '٠':'0','١':'1','٢':'2','٣':'3','٤':'4','٥':'5','٦':'6','٧':'7','٨':'8','٩':'9', ' ': '-' }; return str.split('').map(char => map[char] || char).join(''); }
 window.autoSlug = () => { const title = document.getElementById('pTitle').value.replace(/<[^>]*>?/gm, '').trim(); if (document.getElementById('pSlug').dataset.mode === 'new') { let slug = arabicToLatin(title).toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-'); if(slug.length < 2) slug = 'post-' + Date.now(); document.getElementById('pSlug').value = slug.substring(0, 20); } };

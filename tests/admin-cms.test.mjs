@@ -38,7 +38,12 @@ window.__t = {
   renderPosts() { renderPosts(); },
   setEditingPost(p) { currentEditingPost = p; },
   setSlugMode(m) { document.getElementById('pSlug').dataset.mode = m; },
-  todayBaghdad, nowBaghdadHM, escapeHtml, sanitizeRichText, sanitizeSvg, safeUrl, safeIconName, safeParseJsArray
+  todayBaghdad, nowBaghdadHM, escapeHtml, sanitizeRichText, sanitizeSvg, safeUrl, safeIconName, safeParseJsArray,
+  // جسر المصادقة
+  detectTokenKind, verifyGithubConnection, renderGhValidation, showLoginModal,
+  clearGithubSession, renderConnectionStatus, writeSetting, readSetting, removeSetting, isTokenPersisted,
+  getConfig: () => ({ ...ghConfig }),
+  setConfig: (c) => { ghConfig = { ...ghConfig, ...c }; }
 };
 `);
 
@@ -259,6 +264,150 @@ window.deleteByIndex(0);
 await sleep(250);
 const deletes = window.__records.filter(r => r.method === 'DELETE').map(r => r.url.split('/contents/')[1]);
 check('الخطة البديلة: حذف الملفين (JSON + HTML)', deletes.includes('content/posts/fallback-post.json') && deletes.includes('article-fallback-post.html'), JSON.stringify(deletes));
+
+
+/* ============================================================
+ * 7) أمان الجلسة: تسجيل الخروج + التحقق من نوع الرمز + التخزين
+ * ============================================================ */
+
+/* ---------- 7-أ) كشف نوع الرمز ---------- */
+const detect = window.__t.detectTokenKind;
+check('كشف Fine-grained PAT', detect('github_pat_' + 'A'.repeat(60)) === 'fine-grained');
+check('كشف Classic PAT', detect('ghp_' + 'a'.repeat(36)) === 'classic');
+check('كشف Classic القديم (40 hex)', detect('a'.repeat(40)) === 'classic-legacy');
+check('كشف OAuth token', detect('gho_' + 'x'.repeat(30)) === 'oauth');
+check('رفض تنسيق غير معروف', detect('my-random-token') === 'unknown');
+check('كشف الرمز الفارغ', detect('') === 'empty' && detect(null) === 'empty');
+
+/* ---------- 7-ب) التخزين: جلسة افتراضياً، ودائم مع "تذكّرني" فقط ---------- */
+window.__t.writeSetting('gh_token', 'github_pat_TEST_TOKEN_123', false);
+check('بدون "تذكّرني": الرمز في sessionStorage فقط', window.sessionStorage.getItem('gh_token') === 'github_pat_TEST_TOKEN_123' && window.localStorage.getItem('gh_token') === null);
+check('isTokenPersisted = false للجلسة', window.__t.isTokenPersisted() === false);
+window.__t.writeSetting('gh_token', 'github_pat_TEST_TOKEN_123', true);
+check('مع "تذكّرني": يُحفظ في localStorage', window.localStorage.getItem('gh_token') === 'github_pat_TEST_TOKEN_123' && window.sessionStorage.getItem('gh_token') === null);
+check('isTokenPersisted = true للرمز الدائم', window.__t.isTokenPersisted() === true);
+
+
+/* ---------- 7-ج) مؤشر حالة الاتصال ---------- */
+window.__t.setConfig({ owner: 'demo-owner', repo: 'demo-repo', token: 'github_pat_TEST_TOKEN_123' });
+window.__t.renderConnectionStatus();
+check('مؤشر الحالة: متصل', window.document.getElementById('ghStatusText').textContent === 'متصل');
+check('مؤشر الحالة: يعرض المستودع', window.document.getElementById('ghStatusSub').textContent === 'demo-owner/demo-repo');
+check('زر تسجيل الخروج ظاهر عند الاتصال', window.document.getElementById('btnDisconnect').style.display === 'flex');
+
+/* ---------- 7-د) مسح الجلسة (تسجيل الخروج) ---------- */
+window.document.getElementById('ghToken').value = 'github_pat_TEST_TOKEN_123';   // محاكاة حقل مملوء
+window.__t.setPosts([{ title: 'مقال', slug: 'p', path: 'content/posts/p.json', sha: 's', date: '2026-01-01' }]);
+window.document.getElementById('pContent').value = 'محتوى محرّر';
+const cleared = window.__t.clearGithubSession();
+
+check('clearGithubSession يعيد النجاح', cleared === true);
+check('مسح الرمز من localStorage', window.localStorage.getItem('gh_token') === null);
+check('مسح الرمز من sessionStorage', window.sessionStorage.getItem('gh_token') === null);
+check('الاحتفاظ باسم المستودع فقط (غير حسّاس) لتسهيل الدخول', window.localStorage.getItem('gh_owner') === 'demo-owner' && window.localStorage.getItem('gh_repo') === 'demo-repo');
+check('مسح الرمز من ذاكرة الإدارة (ghConfig)', window.__t.getConfig().token === '' && window.__t.getConfig().owner === 'demo-owner');
+check('مسح حقل الرمز من الواجهة', window.document.getElementById('ghToken').value === '');
+check('مسح كاش المحتوى', window.document.getElementById('postsList').children.length === 0);
+check('إغلاق المحرّرات المفتوحة', window.document.getElementById('postEditor').classList.contains('hidden'));
+check('لا أثر للرمز في أي قيمة تخزين', (() => {
+  const scan = (store) => Object.keys(store).some(k => String(store.getItem(k)).includes('github_pat_TEST_TOKEN_123'));
+  return !scan(window.localStorage) && !scan(window.sessionStorage);
+})());
+
+/* ---------- 7-هـ) مؤشر الحالة بعد الخروج ---------- */
+window.__t.setConfig({ token: '' });
+window.__t.renderConnectionStatus();
+check('مؤشر الحالة: غير متصل بعد الخروج', window.document.getElementById('ghStatusText').textContent === 'غير متصل');
+check('زر تسجيل الخروج مخفي بعد الخروج', window.document.getElementById('btnDisconnect').style.display === 'none');
+
+/* ---------- 7-و) شاشة الدخول تظهر ولا تعبّئ الرمز أبداً ---------- */
+window.localStorage.setItem('gh_owner', 'kinanmjeed88');
+window.localStorage.setItem('gh_repo', 'repo-X');
+window.localStorage.setItem('gh_token', 'github_pat_SHOULD_NOT_BE_PREFILLED');
+window.__t.setConfig({ owner: 'kinanmjeed88', repo: 'repo-X', token: '' });
+window.__t.showLoginModal();
+check('شاشة الدخول ظاهرة', !window.document.getElementById('ghModal').classList.contains('hidden'));
+check('لا يتم تعبئة الرمز في الواجهة مطلقاً (حتى لو وُجد في التخزين)', window.document.getElementById('ghToken').value === '');
+check('تعبئة owner/repo مسموح (غير حسّاس)', window.document.getElementById('ghOwner').value === 'kinanmjeed88' && window.document.getElementById('ghRepo').value === 'repo-X');
+window.__t.clearGithubSession();
+window.localStorage.removeItem('gh_owner'); window.localStorage.removeItem('gh_repo');
+
+/* ---------- 7-ز) منع تحميل البيانات بدون رمز ---------- */
+window.__records.length = 0;
+window.__t.setConfig({ token: '' });
+window.switchTab('posts');
+await sleep(30);
+check('switchTab لا يطلب بيانات بدون تسجيل دخول', window.__records.filter(r => r.url.includes('/contents/')).length === 0);
+check('switchTab يظهر شاشة الدخول بدل الخطأ', !window.document.getElementById('ghModal').classList.contains('hidden'));
+
+/* ---------- 7-ح) التحقق من الرمز عبر GitHub (رفض/قبول) ---------- */
+const realFetch = window.fetch;
+const mockGithubVerify = (opts) => { window.fetch = async function (u, o = {}) { return opts(String(u), o); }; };
+
+mockGithubVerify(async (u) => {
+  if (u.endsWith('/user')) return { ok: false, status: 401, headers: { get: () => '' }, json: async () => ({}) };
+  return { ok: false, status: 404, headers: { get: () => '' }, json: async () => ({}) };
+});
+let r1 = await window.__t.verifyGithubConnection({ owner: 'o', repo: 'r', token: 'github_pat_bad' });
+check('التحقق يرفض رمزاً غير صالح (401)', r1.ok === false && r1.kind === 'invalid');
+
+mockGithubVerify(async (u) => {
+  if (u.endsWith('/user')) return { ok: true, status: 200, headers: { get: (h) => (h === 'x-oauth-scopes' ? '' : '') }, json: async () => ({ login: 'kinan' }) };
+  return { ok: false, status: 404, headers: { get: () => '' }, json: async () => ({}) };
+});
+let r2 = await window.__t.verifyGithubConnection({ owner: 'o', repo: 'r', token: 'github_pat_x' });
+check('التحقق يرفض رمزاً بلا وصول للمستودع (404)', r2.ok === false && r2.kind === 'no-repo', r2.kind);
+
+mockGithubVerify(async (u) => {
+  if (u.endsWith('/user')) return { ok: true, status: 200, headers: { get: (h) => (h === 'x-oauth-scopes' ? 'repo, gist' : '') }, json: async () => ({ login: 'kinan' }) };
+  return { ok: true, status: 200, headers: { get: () => '' }, json: async () => ({ permissions: { push: true, admin: false }, default_branch: 'main', private: false }) };
+});
+let r3 = await window.__t.verifyGithubConnection({ owner: 'o', repo: 'r', token: 'ghp_classic' });
+check('التحقق يقرأ صلاحيات Classic الواسعة (repo)', r3.ok === true && r3.scopes.includes('repo'), r3.scopes);
+
+mockGithubVerify(async (u) => {
+  if (u.endsWith('/user')) return { ok: true, status: 200, headers: { get: () => '' }, json: async () => ({ login: 'kinan' }) };
+  return { ok: true, status: 200, headers: { get: () => '' }, json: async () => ({ permissions: { push: false }, default_branch: 'main' }) };
+});
+let r4 = await window.__t.verifyGithubConnection({ owner: 'o', repo: 'r', token: 'github_pat_readonly' });
+check('التحقق يرفض الرمز بصلاحية قراءة فقط', r4.ok === false && r4.kind === 'read-only');
+
+/* ---------- 7-ط) saveGhSettings: يرفض التنسيق غير المعروف ---------- */
+let confirmCalls = 0;
+window.confirm = () => { confirmCalls++; return false; };
+window.document.getElementById('ghOwner').value = 'o';
+window.document.getElementById('ghRepo').value = 'r';
+window.document.getElementById('ghToken').value = 'not-a-github-token';
+window.__t.setConfig({ owner: 'o', repo: 'r', token: '' });
+await window.saveGhSettings();
+const boxUnknown = window.document.getElementById('ghValidationBox');
+check('يرفض الرمز ذا التنسيق غير المعروف', !boxUnknown.className.includes('hidden') && boxUnknown.textContent.includes('غير معروف'));
+check('لم يُحفظ أي رمز بعد الرفض', window.localStorage.getItem('gh_token') === null && window.sessionStorage.getItem('gh_token') === null);
+
+/* ---------- 7-ي) saveGhSettings: يحذّر من Classic ثم يقبل بعد الموافقة ---------- */
+window.confirm = () => { confirmCalls++; return true; };
+mockGithubVerify(async (u) => {
+  if (u.endsWith('/user')) return { ok: true, status: 200, headers: { get: (h) => (h === 'x-oauth-scopes' ? 'repo' : '') }, json: async () => ({ login: 'kinan' }) };
+  return { ok: true, status: 200, headers: { get: () => '' }, json: async () => ({ permissions: { push: true }, default_branch: 'main' }) };
+});
+window.document.getElementById('ghToken').value = 'ghp_' + 'a'.repeat(36);
+window.document.getElementById('ghRemember').checked = false;
+await window.saveGhSettings();
+check('يُطلب تأكيد صريح قبل قبول Classic Token', confirmCalls >= 1, 'confirm calls: ' + confirmCalls);
+check('Classic المقبول يُحفظ في الجلسة فقط (بدون تذكّرني)', window.sessionStorage.getItem('gh_token') === 'ghp_' + 'a'.repeat(36) && window.localStorage.getItem('gh_token') === null);
+check('عرض تحذير صلاحية repo في رسالة النجاح', window.document.getElementById('ghValidationBox').textContent.includes('repo'));
+
+/* ---------- 7-ك) Fine-grained يُحفظ بلا تحذير + مع "تذكّرني" ---------- */
+confirmCalls = 0;
+window.document.getElementById('ghToken').value = 'github_pat_' + 'B'.repeat(40);
+window.document.getElementById('ghRemember').checked = true;
+window.__records.length = 0;
+await window.saveGhSettings();
+check('Fine-grained يُقبل بدون أي تحذير', confirmCalls === 0);
+check('Fine-grained مع "تذكّرني" يُحفظ دائماً', window.localStorage.getItem('gh_token') === 'github_pat_' + 'B'.repeat(40));
+check('لا يُرسل الرمز لأي خادم غير GitHub', window.__records.every(r => r.url.startsWith('https://api.github.com/')));
+window.__t.clearGithubSession();
+window.fetch = realFetch;
 
 const failed = results.filter(r => !r.pass);
 console.log('\n' + (failed.length === 0 ? `✅ ALL TESTS PASSED (${results.length})` : `❌ ${failed.length} FAILED of ${results.length}`));
