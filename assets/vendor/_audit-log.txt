@@ -1,0 +1,78 @@
++ mkdir -p assets/vendor
++ UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36'
++ URL=https://cdn.tailwindcss.com/3.4.17
++ DEST=assets/vendor/tailwind-3.4.17.min.js
++ curl -sSL -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36' -o assets/vendor/tailwind-3.4.17.min.js https://cdn.tailwindcss.com/3.4.17
++ echo 'curl exit: 0'
+curl exit: 0
+++ wc -c
++ SIZE=407279
++ echo SIZE=407279
+SIZE=407279
++ head -c 200 assets/vendor/tailwind-3.4.17.min.js
+(()=>{var qv=Object.create;var Hi=Object.defineProperty;var $v=Object.getOwnPropertyDescriptor;var Lv=Object.getOwnPropertyNames;var Mv=Object.getPrototypeOf,Nv=Object.prototype.hasOwnProperty;var df=+ echo
+
++ tail -c 120 assets/vendor/tailwind-3.4.17.min.js
+) 2015-present, Jon Schlinkert.
+ * Released under the MIT License.
+ */
+/*! https://mths.be/cssesc v3.0.0 by @mathias */
++ echo
+
+++ openssl dgst -sha384 -binary assets/vendor/tailwind-3.4.17.min.js
+++ openssl base64 -A
++ SRI384=sha384-igm5BeiBt36UU4gqwWS7imYmelpTsZlQ45FZf+XBn9MuJbn4nQr7yx1yFydocC/K
+++ openssl dgst -sha256 -binary assets/vendor/tailwind-3.4.17.min.js
+++ openssl base64 -A
++ SRI256=sha256-F26JRmGqnNyaXLpscgBEy797i9gNHJoUKnwksbbFDRU=
++ echo INTEGRITY384=sha384-igm5BeiBt36UU4gqwWS7imYmelpTsZlQ45FZf+XBn9MuJbn4nQr7yx1yFydocC/K
+INTEGRITY384=sha384-igm5BeiBt36UU4gqwWS7imYmelpTsZlQ45FZf+XBn9MuJbn4nQr7yx1yFydocC/K
++ echo INTEGRITY256=sha256-F26JRmGqnNyaXLpscgBEy797i9gNHJoUKnwksbbFDRU=
+INTEGRITY256=sha256-F26JRmGqnNyaXLpscgBEy797i9gNHJoUKnwksbbFDRU=
++ node -e 'require('\''vm'\'').Script(require('\''fs'\'').readFileSync('\''assets/vendor/tailwind-3.4.17.min.js'\'','\''utf8'\'')); console.log('\''SYNTAX_OK'\'')'
+[eval]:1
+require('vm').Script(require('fs').readFileSync('assets/vendor/tailwind-3.4.17.min.js','utf8')); console.log('SYNTAX_OK')
+              ^
+
+TypeError: Class constructor Script cannot be invoked without 'new'
+    at [eval]:1:15
+    at runScriptInThisContext (node:internal/vm:209:10)
+    at node:internal/process/execution:446:12
+    at [eval]-wrapper:6:24
+    at runScriptInContext (node:internal/process/execution:444:60)
+    at evalFunction (node:internal/process/execution:279:30)
+    at evalTypeScript (node:internal/process/execution:291:3)
+    at node:internal/main/eval_string:74:3
+
+Node.js v22.23.3
++ echo SYNTAX_FAIL
+SYNTAX_FAIL
++ echo '# إشعارات مكتبات الطرف الثالث'
++ echo
++ echo '## Tailwind CSS — Play CDN build v3.4.17 (مستضاف ذاتياً)'
++ echo '- **المصدر الأصلي:** https://cdn.tailwindcss.com/3.4.17'
++ echo '- **الترخيص:** MIT © Tailwind Labs, Inc.'
++ echo '- **سبب الاستضافة الذاتية:** خادم cdn.tailwindcss.com لا يرسل ترويسة Access-Control-Allow-Origin،'
++ echo '  لذا لا يمكن استخدام Subresource Integrity (SRI) معه لأن المتصفح يمنع التحقق من التكامل'
++ echo '  للموارد عبر الأصل بدون CORS. الاستضافة الذاتية تُلغي الاعتماد على طرف ثالث وقت التشغيل.'
++ echo '- **SHA-384 (Integrity):** sha384-igm5BeiBt36UU4gqwWS7imYmelpTsZlQ45FZf+XBn9MuJbn4nQr7yx1yFydocC/K'
++ echo '- **SHA-256:** sha256-F26JRmGqnNyaXLpscgBEy797i9gNHJoUKnwksbbFDRU='
++ echo '- **الحجم:** 407279 بايت'
+++ date -u +%Y-%m-%d
++ echo '- **تاريخ الجلب:** 2026-10-02'
++ echo
++ echo '## Lucide Icons v1.50.0'
++ echo '- **المصدر:** https://unpkg.com/lucide@1.50.0/dist/umd/lucide.min.js'
++ echo '- **الترخيص:** ISC © Lucide Contributors'
++ echo '- **SRI (SHA-384):** sha384-/sIySnlbVLfPSNdgy7yqanP6+Dv4en7FlBure4Rag0mp480bA2f+nTviC6933zkQ'
++ echo '- يُحمَّل من CDN مع integrity + crossorigin=anonymous (unpkg يرسل Access-Control-Allow-Origin: *).'
++ echo NOTICES_WRITTEN
+NOTICES_WRITTEN
++ ls -la assets/vendor/
+total 412
+drwxr-xr-x 2 runner runner   4096 Oct  2 16:10 .
+drwxr-xr-x 6 runner runner   4096 Oct  2 16:10 ..
+-rw-r--r-- 1 runner runner   1268 Oct  2 16:10 THIRD-PARTY-NOTICES.md
+-rw-r--r-- 1 runner runner 407279 Oct  2 16:10 tailwind-3.4.17.min.js
++ echo DONE_OK
+DONE_OK
