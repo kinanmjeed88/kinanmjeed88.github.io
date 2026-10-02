@@ -1,0 +1,50 @@
+name: CDN Audit (مؤقت — يُحذف بعد أخذ البصمات)
+
+on:
+  push:
+    branches:
+      - arena/01a0fd0d-kinanmjeed88-github-io
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: فحص الروابط المثبّتة (رؤوس CORS + بصمات SRI)
+        run: |
+          mkdir -p out
+          probe () {
+            url="$1"; name="$2"
+            echo "=================================================================="
+            echo "URL       : $url"
+            hdr=$(mktemp)
+            code=$(curl -sL -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36" \
+                        -o "out/$name" -D "$hdr" -w '%{http_code}' "$url" || echo "000")
+            eff=$(curl -sL -o /dev/null -w '%{url_effective}' "$url" || echo "-")
+            echo "HTTP      : $code   (حجم: $(wc -c < "out/$name") بايت)"
+            echo "EFFECTIVE : $eff"
+            echo "ACAO      : $(grep -i '^access-control-allow-origin' "$hdr" | tr -d '\r' | tail -1)"
+            echo "CTYPE     : $(grep -i '^content-type' "$hdr" | tr -d '\r' | tail -1)"
+            echo "CACHE     : $(grep -i '^cache-control' "$hdr" | tr -d '\r' | tail -1)"
+            echo "LASTMOD   : $(grep -i '^last-modified' "$hdr" | tr -d '\r' | tail -1)"
+            echo "INTEGRITY : sha384-$(openssl dgst -sha384 -binary "out/$name" | openssl base64 -A)"
+            echo "SHA256    : sha256-$(openssl dgst -sha256 -binary "out/$name" | openssl base64 -A)"
+            echo "FIRST90   : $(head -c 90 "out/$name" | tr '\n' ' ')"
+            echo "MARKERS   : tailwind=$(grep -c 'tailwind' "out/$name" 2>/dev/null || echo 0) createIcons=$(grep -c 'createIcons' "out/$name" 2>/dev/null || echo 0)"
+          }
+          probe "https://cdn.tailwindcss.com/3.4.19" tw_3419.js
+          probe "https://cdn.tailwindcss.com" tw_latest.js
+          probe "https://unpkg.com/lucide@1.50.0/dist/umd/lucide.min.js" lucide_1500.js
+          probe "https://cdn.jsdelivr.net/npm/lucide@1.50.0/dist/umd/lucide.min.js" lucide_jsdelivr.js
+          probe "https://cdn.jsdelivr.net/npm/tailwindcss@3.4.19/lib/index.js" tw_jsdelivr_probe.js
+          echo "=================================================================="
+          echo "انتهى الفحص."
+      - name: حفظ الملفات كأرشيف (للخيار الاحتياطي: استضافة محلية)
+        uses: actions/upload-artifact@v4
+        with:
+          name: cdn-assets
+          path: out/
+          retention-days: 3
