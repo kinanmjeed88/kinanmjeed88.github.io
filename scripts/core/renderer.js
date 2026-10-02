@@ -113,15 +113,15 @@ export const FIXED_AD_UNIT = `
 </div>
 `;
 
-// --- AUTO FORMAT AD UNIT (FOR PLACEMENTS OUTSIDE ARTICLE TEXT) ---
-export const AUTO_FORMAT_AD_UNIT = `
+// --- HORIZONTAL/RECTANGLE AD UNIT (FOR PLACEMENTS OUTSIDE ARTICLE TEXT) ---
+export const HORIZONTAL_RECTANGLE_AD_UNIT = `
 <div class="ad-placement-wrapper" style="text-align: center; margin: 2rem auto; clear: both; width: 100%; min-width: 250px;">
     <span class="text-[10px] text-gray-400 block mb-2 tracking-widest font-mono">ADVERTISEMENT</span>
     <ins class="adsbygoogle"
          style="display:block"
          data-ad-client="ca-pub-7355327732066930"
          data-ad-slot="1057566101"
-         data-ad-format="auto"
+         data-ad-format="horizontal, rectangle"
          data-full-width-responsive="true"></ins>
     <script>
          (adsbygoogle = window.adsbygoogle || []).push({});

@@ -6,7 +6,7 @@ import { safeWrite } from '../utils/fs.js';
 import { updateGlobalElements } from '../core/global.js';
 import { cleanPath, escapeHtml, escapeXml, stripHtml, toAbsoluteUrl } from '../utils/helpers.js';
 import { parseMarkdown } from '../core/markdown.js';
-import { getCatLabel, generateAdBannerHTML, FIXED_AD_UNIT, AUTO_FORMAT_AD_UNIT } from '../core/renderer.js';
+import { getCatLabel, generateAdBannerHTML, FIXED_AD_UNIT, HORIZONTAL_RECTANGLE_AD_UNIT } from '../core/renderer.js';
 import { BASE_URL } from '../config/constants.js';
 
 export async function generateIndividualArticles({ allPosts, postsByCategory, aboutData, channelsData, categoriesData, analyticsData }) {
@@ -276,7 +276,7 @@ export async function generateIndividualArticles({ allPosts, postsByCategory, ab
         if (post.summary) {
             $('article').append(`
             <div class="ad-pre-summary mb-4 mt-4">
-                ${AUTO_FORMAT_AD_UNIT}
+                ${HORIZONTAL_RECTANGLE_AD_UNIT}
             </div>`);
         }
 
@@ -390,7 +390,7 @@ export async function generateIndividualArticles({ allPosts, postsByCategory, ab
             // إعلان جوجل المتجاوب قبل القائمة الجانبية (List)
             relatedHTML += `
             <div class="ad-mid-related-google mb-6 mt-4" style="margin-top: 24px; margin-bottom: 24px;">
-                ${AUTO_FORMAT_AD_UNIT}
+                ${HORIZONTAL_RECTANGLE_AD_UNIT}
             </div>`;
 
             if (listPosts.length > 0) {
