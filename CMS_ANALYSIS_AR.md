@@ -1,6 +1,6 @@
 # تحليل شامل — صفحة TechTouch CMS (لوحة التحكم)
 
-> **تاريخ التحليل:** 2 أكتوبر 2026 — **آخر تحديث للوثيقة:** بعد تنفيذ ترقيع الأمان + حذف الصفحات اليتيمة + توقيت بغداد + **P0 الأمني: التحقق من التوكن وزر «تسجيل الخروج» ودعم Fine-grained PAT**
+> **تاريخ التحليل:** 2 أكتوبر 2026 — **آخر تحديث للوثيقة:** اكتمل P0 الأمني: التوكن وزر «تسجيل الخروج» + **تثبيت إصدارات المكتبات واستضافة Tailwind وFuse ذاتياً وتطبيق SRI**
 > **المستودع:** `kinanmjeed88/kinanmjeed88.github.io` — الفرع `main`
 > **الملفات المشمولة:** `admin/index.html` · `admin/admin.js` · ملفات البيانات وخط التحليلات المرتبط باللوحة
 > **النطاق:** التحليل والتعديلات تخصّ **لوحة التحكم (TechTouch CMS)** فقط، دون المساس بصفحات الموقع العامة.
@@ -27,6 +27,9 @@
 | 🧠 **التحقق من التوكن** قبل الحفظ: رفض الصيغ غير المعروفة، وقراءة `x-oauth-scopes`، ورفض صلاحية القراءة فقط | ✅ تم | `admin/admin.js` |
 | 🔑 زر **«تسجيل الخروج / فصل الاتصال»** يمحو التوكن من كل مخازن المتصفح ويُرجعك لشاشة الدخول فوراً | ✅ تم | `admin/admin.js` + `admin/index.html` |
 | 💾 تخزين التوكن في `sessionStorage` افتراضياً (`localStorage` فقط مع «تذكّرني على هذا الجهاز») | ✅ تم | `admin/admin.js` |
+| 📦 **تثبيت إصدارات** كل المكتبات الخارجية (Tailwind 3.4.17 · Lucide 1.50.0 · Fuse 7.0.0 · Font Awesome 6.5.1) | ✅ تم | كل الصفحات + `assets/vendor/` |
+| 🛡️ **SRI + استضافة ذاتية** لـ Tailwind وFuse، و`integrity` + `crossorigin` لـ Lucide وFont Awesome | ✅ تم | 112 صفحة + 6 مقالات + القوالب |
+| 🧪 اختبار سلامة الموارد الخارجية (11 فحصاً) يراقب البصمات ويمنع عودة `@latest` | ✅ تم | `tests/assets-integrity.test.mjs` |
 
 ### جدول الأولويات المتبقية
 
@@ -266,7 +269,33 @@ function nowBaghdadHM(date = new Date())        // HH:MM بتوقيت بغداد
 ```bash
 npm i --no-save jsdom
 node tests/admin-cms.test.mjs      # ✅ ALL TESTS PASSED (93)
+node tests/assets-integrity.test.mjs   # ✅ ALL TESTS PASSED (11)
 ```
+
+### 4.5 📦 تثبيت الإصدارات وتطبيق SRI (إغلاق A4)
+
+**الفكرة:** منع تشغيل أي كود خبيث في حال اختراق خوادم الـ CDN، عبر تثبيت إصدارات دقيقة (`integrity` + `crossorigin`) أو الاستضافة الذاتية.
+
+**نتيجة الفحص العملي** (نُفّذ من مهمة Actions على إنترنت كامل، لأن خوادم الـ CDN محجوبة داخل بيئة التطوير):
+
+| المورد | النتيجة | القرار |
+|--------|---------|--------|
+| `cdn.tailwindcss.com` | **لا يرسل `Access-Control-Allow-Origin` إطلاقاً** (حتى مع إرسال `Origin`) — ويلغي فعلياً استخدام SRI؛ كما أن الرابط بلا إصدار يُحوِّل داخلياً إلى `3.4.17` | **استضافة ذاتية** للإصدار `3.4.17` في `assets/vendor/tailwind-3.4.17.min.js` + `integrity` |
+| `unpkg.com/lucide@latest` | يرسل `access-control-allow-origin: *` و`content-digest` مطابق لبصمتنا | تثبيت `1.50.0` بمسار الملف الصريح + `integrity` + `crossorigin="anonymous"` |
+| `esm.sh/fuse.js@7.0.0` | استيراد ES module **لا يدعم SRI إطلاقاً** (خاصية لوسوم `<script>/<link>` فقط) | **استضافة ذاتية** لـ `dist/fuse.mjs` في `assets/vendor/fuse-7.0.0.mjs` |
+| `cdnjs…/font-awesome/6.5.1` | ثابت الإصدار + `access-control-allow-origin: *` | إضافة `integrity` + `crossorigin="anonymous"` |
+
+**أرقام التنفيذ:** 112 صفحة HTML + 5 قوالب + 6 مقالات (JSON) + مكتبة Fuse، وإزالة `preconnect` غير الضرورية إلى `esm.sh` من المولّد و104 صفحات.
+
+**البصمات المعتمدة (SHA-384):**
+- Tailwind 3.4.17: `sha384-igm5BeiBt36UU4gqwWS7imYmelpTsZlQ45FZf+XBn9MuJbn4nQr7yx1yFydocC/K`
+- Lucide 1.50.0: `sha384-/sIySnlbVLfPSNdgy7yqanP6+Dv4en7FlBure4Rag0mp480bA2f+nTviC6933zkQ`
+- Fuse 7.0.0: `sha384-xZH1QJAP3pxvWYqB74MvWTHXRLEe+5oPmgoSe0mLQ7N0SmO2ZTIq3GBbJH+bMGYm`
+- Font Awesome 6.5.1: `sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g`
+
+**استثناءات مقصودة (موثّقة في الاختبار):** `googletagmanager.com` (GA4) و`pagead2.googlesyndication.com` (AdSense) و`cdn.onesignal.com` — محتواها يتغيّر من المصدر باستمرار فلا يمكن تثبيت بصمة لها. و`fonts.googleapis.com` — يُخدم CSS مختلف لكل متصفح، وتطبيق SRI عليه يكسر الخطوط. لم يبقَ أي مورد تنفيذي بلا حماية.
+
+**انتبه:** Tailwind Play CDN يطبع تحذيراً في الـ Console (`cdn.tailwindcss.com should not be used in production…`) لأن الملف نفسه هو «محرّك التطوير». التحذير نصّي من المكتبة ولا يعني خطأ تحميل؛ الترقية إلى Tailwind مُبنى مسبقاً (PostCSS) بندٌ في خطة P2/P3.
 
 ---
 
@@ -277,10 +306,10 @@ node tests/admin-cms.test.mjs      # ✅ ALL TESTS PASSED (93)
 | # | المشكلة | التوصية |
 |---|---------|---------|
 | ✅ A2 | ~~التوكن في `localStorage` بصلاحية `repo` كاملة، بلا انتهاء ولا زر فصل~~ **أُنجز** | التوجيه إلى **Fine-grained PAT** (`Contents: R/W` للمستودع فقط) + تخزين افتراضي في `sessionStorage` + **تحقق مسبق** من التوكن والصلاحيات قبل الحفظ + **زر تسجيل الخروج** يمحو التوكن من كل مخازن المتصفح |
-| 🟠 A4 | `cdn.tailwindcss.com` و`unpkg.com/lucide@latest` بلا تثبيت إصدار ولا SRI | تثبيت الإصدار + `integrity`، أو تضمين الحزم محلياً |
+| ✅ A4 | ~~`cdn.tailwindcss.com` و`unpkg.com/lucide@latest` بلا تثبيت إصدار ولا SRI~~ **أُنجز** | تثبيت إصدارات كل المكتبات + SRI، مع **استضافة Tailwind وFuse ذاتياً** (تفاصيل القسم 4.5) |
 | 🟡 A5 | `_headers` فارغ، و`https_enforced: false` في إعدادات Pages | تفعيل HTTPS-only وإضافة CSP للوحة |
 
-> ملاحظة: بعد إصلاح XSS في هذه الجولة، صار خطر سرقة التوكن من محتوى المقالات مغلقاً؛ يبقى الخطر النظري من حزم الطرف الثالث (A4).
+> ملاحظة: بعد إصلاح XSS صار خطر سرقة التوكن من محتوى المقالات مغلقاً، وبعد تطبيق SRI/الاستضافة الذاتية أُغلق أيضاً خطر اختراق خوادم الـ CDN. يبقى **A5** (تفعيل CSP وHTTPS-only عبر `_headers`) البندَ الأمنيَ الوحيد المتبقّي.
 
 ### 5.2 وظيفية
 
@@ -355,7 +384,7 @@ node tests/admin-cms.test.mjs      # ✅ ALL TESTS PASSED (93)
 
 | المرحلة | المهمة | الفائدة |
 |--------|--------|--------|
-| **P0 — أمن** | ✅ **مُنجزة:** Fine-grained PAT + التحقق من التوكن + زر «فصل الاتصال» — يتبقّى: تثبيت إصدارات CDN مع SRI | أُغلقت مخاطر التوكن؛ يبقى تأمين حزم الطرف الثالث |
+| **P0 — أمن** | ✅ **مُنجزة بالكامل:** Fine-grained PAT + التحقق من التوكن + زر «فصل الاتصال» + تثبيت الإصدارات وSRI والاستضافة الذاتية | أُغلقت مخاطر التوكن وحزم الطرف الثالث |
 | **P1 — موثوقية** | رفع حد الـ Slug إلى 60 حرفاً + فحص التفرّد + رسائل خطأ عربية | منع فشل الحفظ |
 | **P1 — موثوقية** | `try/catch` في كل مسارات الحفظ وإزالة الفروع الميتة | تجربة أفضل |
 | **P2 — تجربة** | **مسودات + حفظ تلقائي** في `localStorage` + تحذير قبل المغادرة | حماية جهد المحرّر |

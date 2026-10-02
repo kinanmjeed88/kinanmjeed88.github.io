@@ -24,3 +24,10 @@
 - **الحجم:** 41288 بايت
 - **ملاحظة:** كان يُستورد من `https://esm.sh/fuse.js@7.0.0` — ووحدات ES لا تدعم SRI إطلاقاً
   (التحقق من التكامل خاصية لوسوم `<script>`/`<link>` فقط)، لذا الاستضافة الذاتية هي الطريقة الوحيدة لتأمينه.
+
+## Font Awesome Free 6.5.1
+- **المصدر:** https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css
+- **الترخيص:** Icons: CC BY 4.0 | Fonts: SIL OFL 1.1 | Code: MIT
+- **SRI (SHA-384):** sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g
+- **ملاحظة:** cdnjs يرسل `access-control-allow-origin: *` (مُتحقَّق منه عملياً) لذا يعمل `crossorigin="anonymous"` + SRI.
+  ملفات الخطوط (woff2) المشار إليها داخل CSS لا يمكن تطبيق SRI عليها (تحددها CSS لا وسم HTML).
