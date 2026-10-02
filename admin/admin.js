@@ -84,6 +84,34 @@ function safeIconName(value, fallback = 'star') {
     return /^[a-z0-9-]{1,40}$/.test(name) ? name : fallback;
 }
 
+// ============================================================================
+//  🕒 التوقيت المعتمد للوحة: توقيت بغداد (UTC+03:00) — وليس التوقيت العالمي UTC
+// ============================================================================
+const SITE_TIMEZONE = 'Asia/Baghdad';
+
+/** تفكيك التاريخ الحالي إلى أجزائه في توقيت بغداد */
+function baghdadDateParts(date = new Date()) {
+    const formatter = new Intl.DateTimeFormat('en-GB', {
+        timeZone: SITE_TIMEZONE, year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', hour12: false
+    });
+    const parts = {};
+    formatter.formatToParts(date).forEach(p => { parts[p.type] = p.value; });
+    return parts;
+}
+
+/** تاريخ اليوم بصيغة YYYY-MM-DD بتوقيت بغداد */
+function todayBaghdad(date = new Date()) {
+    const p = baghdadDateParts(date);
+    return `${p.year}-${p.month}-${p.day}`;
+}
+
+/** الوقت الحالي بصيغة HH:MM بتوقيت بغداد */
+function nowBaghdadHM(date = new Date()) {
+    const p = baghdadDateParts(date);
+    return `${p.hour}:${p.minute}`;
+}
+
 const RICH_TEXT_ALLOWED = {
     SPAN: ['class'], B: [], STRONG: [], I: [], EM: [], U: [], MARK: [], SMALL: [], SUP: [], SUB: [], BR: []
 };
@@ -663,11 +691,10 @@ window.openPostEditor = () => {
     // Set default render mode to Markdown
     document.querySelector('input[name="pRenderMode"][value="markdown"]').checked = true;
 
-    // Default Time: Current Time
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    document.getElementById('pTime').value = `${hours}:${minutes}`;
+    // الوقت الافتراضي: الوقت الحالي بتوقيت بغداد (UTC+03:00)
+    document.getElementById('pTime').value = nowBaghdadHM();
+    const hint = document.getElementById('pTimeHint');
+    if (hint) hint.textContent = `توقيت بغداد الآن: ${nowBaghdadHM()}`;
 };
 window.closePostEditor = () => document.getElementById('postEditor').classList.add('hidden');
 
@@ -765,10 +792,10 @@ window.savePost = async () => {
         let manualDate = document.getElementById('pDate')?.value;
         let finalDate = manualDate && manualDate.trim() !== ''
             ? manualDate
-            : new Date().toISOString().split('T')[0];
+            : todayBaghdad(); // توقيت بغداد (UTC+03:00)
 
-        const finalTime = document.getElementById('pTime').value || "00:00";
-        const now = new Date().toISOString().split('T')[0];
+        const finalTime = document.getElementById('pTime').value || nowBaghdadHM();
+        const now = todayBaghdad(); // تاريخ التحديث بتوقيت بغداد
         
         // Get selected render mode
         const renderMode = document.querySelector('input[name="pRenderMode"]:checked').value;
@@ -1405,9 +1432,8 @@ function fmtDateTime(iso) {
     try {
         const d = new Date(iso);
         if (isNaN(d.getTime())) return '';
-        const datePart = d.toLocaleDateString('en-GB', { month: '2-digit', day: '2-digit' });
-        const timePart = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
-        return `${datePart} ${timePart}`;
+        const parts = baghdadDateParts(d); // تُعرض بتوقيت بغداد
+        return `${parts.day}/${parts.month} ${parts.hour}:${parts.minute}`;
     } catch (e) { return ''; }
 }
 

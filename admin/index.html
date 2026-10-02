@@ -158,6 +158,10 @@
                         <div class="col-span-2 md:col-span-1 grid grid-cols-2 gap-2">
                             <div><label class="label">التاريخ</label><input type="date" id="pDate" class="input-field dir-ltr"></div>
                             <div><label class="label">الوقت</label><input type="time" id="pTime" class="input-field dir-ltr"></div>
+                            <div class="col-span-2 flex items-center justify-between text-[11px] text-gray-400 -mt-1">
+                                <span>🕒 التوقيت المعتمد: بغداد (UTC+03:00)</span>
+                                <span id="pTimeHint" class="font-bold text-blue-500"></span>
+                            </div>
                         </div>
                         
                         <div class="col-span-2 md:col-span-1"><label class="label">الصورة</label><div class="flex gap-2"><input type="file" id="pFile" class="hidden" onchange="handleFileSelect(this, 'pImage')"><button onclick="document.getElementById('pFile').click()" class="btn-secondary whitespace-nowrap"><i data-lucide="image"></i> رفع</button><input type="text" id="pImage" class="input-field dir-ltr" placeholder="رابط الصورة أو المسار..."></div></div>
