@@ -1,0 +1,22 @@
+# ============================================================
+#  ترويسات الأمان — Cloudflare Pages
+#  النطاق: kinantouch.com (موقع TechTouch)
+#  بُنيت سياسة CSP بعد مسح فعلي لكل مصدر خارجي في المشروع:
+#    • script-src  : unpkg (Lucide) · googletagmanager (GA4) · pagead2.googlesyndication
+#                    (AdSense) · cdn.onesignal (SDK) · esm.sh (importmap في tool-analysis)
+#    • style-src   : cdnjs (Font Awesome) · fonts.googleapis (خط Tajawal)
+#    • img-src     : المقالات تستخدم صوراً من مصادر خارجية متنوعة (Unsplash، أمازون، مايكروسوفت…)
+#    • frame-src   : يوتيوب (فيديوهات المقالات) + إعلانات Google + OneSignal
+#    • connect-src : api.github.com (لوحة التحكم) + قياسات Google + نفس النطاق (/api/*)
+#  ملاحظة: 'unsafe-inline' ضروري في script-src/style-src لأن الصفحات تحتوي
+#          سكربتات مضمّنة (GA4 + speculationrules) ومعالجات أحداث وسمات نمط كثيرة.
+#          البديل المستقبلي: nonce/هاش عبر خط البناء (مُدرج في خطة P2).
+# ============================================================
+
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=()
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://partner.googleadservices.com https://*.google.com https://*.gstatic.com https://*.adtrafficquality.google https://cdn.onesignal.com https://unpkg.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; connect-src 'self' https://api.github.com https://www.googletagmanager.com https://*.google-analytics.com https://analytics.google.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.gstatic.com https://*.adtrafficquality.google https://cdn.onesignal.com https://api.onesignal.com https://*.onesignal.com https://unpkg.com https://esm.sh; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://*.googlesyndication.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://*.google.com https://*.onesignal.com; worker-src 'self' blob:; media-src 'self' https:; manifest-src 'self'
