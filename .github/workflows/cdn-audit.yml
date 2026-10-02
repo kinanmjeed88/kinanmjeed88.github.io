@@ -42,7 +42,7 @@ jobs:
           probe "https://cdn.jsdelivr.net/npm/tailwindcss@3.4.19/lib/index.js" tw_jsdelivr_probe.js
           echo "=================================================================="
           echo "انتهى الفحص."
-      - name: حفظ الملفات كأرشيف (للخيار الاحتياطي: استضافة محلية)
+      - name: "حفظ الملفات كأرشيف (للخيار الاحتياطي - استضافة محلية)"
         uses: actions/upload-artifact@v4
         with:
           name: cdn-assets
