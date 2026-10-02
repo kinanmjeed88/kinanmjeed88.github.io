@@ -1,0 +1,99 @@
+{
+  "generatedAt": "2026-10-02T23:04:34.490Z",
+  "propertyId": "521215223",
+  "source": "ga4-data-api",
+  "note": "Hourly windows end at the latest hour GA4 has data for; day windows use GA4 relative dates (property timezone).",
+  "hourlyRange": {
+    "start": "2026-09-26T00:00:00.000Z",
+    "end": "2026-10-03T01:00:00.000Z"
+  },
+  "effectiveWindows": {
+    "h24": {
+      "start": "2026-10-02T01:00:00.000Z",
+      "end": "2026-10-03T01:00:00.000Z"
+    },
+    "h48": {
+      "start": "2026-10-01T01:00:00.000Z",
+      "end": "2026-10-03T01:00:00.000Z"
+    }
+  },
+  "periods": {
+    "h24": {
+      "users": 241,
+      "totalUsers": 264,
+      "newUsers": 149,
+      "sessions": 266,
+      "views": 430,
+      "start": 1790902800000,
+      "end": 1790989200000,
+      "partial": false,
+      "buckets": 24,
+      "prev": {
+        "users": 232,
+        "totalUsers": 243,
+        "newUsers": 180,
+        "sessions": 244,
+        "views": 362
+      },
+      "change": 0.03879310344827586
+    },
+    "h48": {
+      "users": 473,
+      "totalUsers": 507,
+      "newUsers": 329,
+      "sessions": 510,
+      "views": 792,
+      "start": 1790816400000,
+      "end": 1790989200000,
+      "partial": false,
+      "buckets": 48,
+      "prev": {
+        "users": 435,
+        "totalUsers": 458,
+        "newUsers": 315,
+        "sessions": 465,
+        "views": 733
+      },
+      "change": 0.08735632183908046
+    },
+    "d30": {
+      "users": 6348,
+      "totalUsers": 6486,
+      "newUsers": 5785,
+      "sessions": 8161,
+      "views": 13233,
+      "start": null,
+      "end": null,
+      "partial": false,
+      "buckets": null,
+      "prev": {
+        "users": 5638,
+        "totalUsers": 5783,
+        "newUsers": 4946,
+        "sessions": 7153,
+        "views": 12240
+      },
+      "change": 0.1259311812699539
+    },
+    "d365": {
+      "users": 46718,
+      "totalUsers": 46817,
+      "newUsers": 46272,
+      "sessions": 74191,
+      "views": 125332,
+      "start": null,
+      "end": null,
+      "partial": false,
+      "buckets": null,
+      "prev": {
+        "users": 0,
+        "totalUsers": 0,
+        "newUsers": 0,
+        "sessions": 0,
+        "views": 0
+      },
+      "change": null
+    }
+  },
+  "warnings": []
+}
