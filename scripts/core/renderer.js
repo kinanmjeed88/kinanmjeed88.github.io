@@ -31,20 +31,6 @@ export const ONESIGNAL_SCRIPT = (appId) => `
 export const IMG_ERROR_SCRIPT = `
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // Image Fallback
-    const fallbackImage = 'assets/images/me.jpg';
-    document.querySelectorAll('img').forEach(img => {
-        img.onerror = function() {
-            if (this.src.includes(fallbackImage)) return;
-            this.src = fallbackImage;
-            this.alt = 'Image unavailable';
-            this.classList.add('img-fallback-active');
-        };
-        if (img.naturalWidth === 0 && img.complete) {
-             img.src = fallbackImage;
-        }
-    });
-
     // Dynamic Active State for Nav Tabs
     const current = location.pathname.split("/").pop() || "index.html";
     document.querySelectorAll(".nav-tab, .cat-tab").forEach(tab => {
@@ -111,9 +97,9 @@ export const renderIconHTML = (iconData, defaultIconName, defaultSize = 20) => {
     return `<i data-lucide="${defaultIconName}" style="width:${defaultSize}px; height:${defaultSize}px;"></i>`;
 };
 
-// --- FIXED AD UNIT (SAFE & OPTIMIZED) ---
+// --- IN-ARTICLE AD UNIT (SAFE & OPTIMIZED FOR ARTICLE BODY) ---
 export const FIXED_AD_UNIT = `
-<div class="ad-placement-wrapper" style="text-align: center; margin: 2rem auto; clear: both;">
+<div class="ad-placement-wrapper" style="text-align: center; margin: 2rem auto; clear: both; width: 100%; min-width: 250px;">
     <span class="text-[10px] text-gray-400 block mb-2 tracking-widest font-mono">ADVERTISEMENT</span>
     <ins class="adsbygoogle"
          style="display:block; text-align:center;"
@@ -127,10 +113,26 @@ export const FIXED_AD_UNIT = `
 </div>
 `;
 
+// --- AUTO FORMAT AD UNIT (FOR PLACEMENTS OUTSIDE ARTICLE TEXT) ---
+export const AUTO_FORMAT_AD_UNIT = `
+<div class="ad-placement-wrapper" style="text-align: center; margin: 2rem auto; clear: both; width: 100%; min-width: 250px;">
+    <span class="text-[10px] text-gray-400 block mb-2 tracking-widest font-mono">ADVERTISEMENT</span>
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-7355327732066930"
+         data-ad-slot="1057566101"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+`;
+
 // --- UPDATED: Use .ad-centered-card for custom manual ads ---
 export const generateAdBannerHTML = (aboutData) => {
-    // If specific manual ad banner from settings is enabled, use that.
-    // Otherwise, return the Google Fixed Unit.
+    // Only return custom manual ad banner when explicitly enabled in settings.
+    // Avoid returning FIXED_AD_UNIT here so Google ads are never duplicated back-to-back.
     if (aboutData.adBanner && aboutData.adBanner.enabled === true) {
         const ad = aboutData.adBanner;
         let innerContent = '';
@@ -155,8 +157,7 @@ export const generateAdBannerHTML = (aboutData) => {
         return `<div class="ad-centered-card">${innerContent}</div>`;
     }
     
-    // Default to Fixed Google Ad Unit
-    return FIXED_AD_UNIT;
+    return '';
 };
 
 export const generateSocialFooter = (aboutData) => {

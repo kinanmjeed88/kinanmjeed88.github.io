@@ -1,5 +1,61 @@
 export const searchIndex = [
   {
+    "title": "<span class=\"text-blue-600 dark:text-blue-400 text-lg font-bold\">حسابات أكستريم:</span>  (Xtream IPTV) مجانية ومحدثة",
+    "desc": "تحميل أفضل مشغل IPTV بدون إعلانات مع شرح إضافة الأكواد. يتضمن حسابات اكستريم",
+    "url": "article-extreme-accounts-iptv.html",
+    "category": "Sports",
+    "image": "assets/images/1774270463586_20260323_155405.webp"
+  },
+  {
+    "title": "حل مشكلة التطببق غير متوافق مع الهاتف",
+    "desc": "أداة متقدمة لإدارة تثبيت وتحديث وإزالة تطبيقات Android، مع خيارات للتعامل مع التطبيقات القديمة، Downgrade، APKات الاختبار، الأذونات وقيود النظام.",
+    "url": "article-app_not_compatible.html",
+    "category": "Apps",
+    "image": "assets/images/1789846942774_file_00000000dfa0820a9c45846b41de063a.webp"
+  },
+  {
+    "title": "جدول الدروس المدرسي: إنشاء وتوليد جداول الحصص تلقائياً بدون تعارض",
+    "desc": "لتوليد الجداول المدرسية للمراحل (الابتدائية، المتوسطة، والإعدادية). أداة ذكية لحل تعارضات المعلمين، وتوزيع الحصص بضغطة زر، مع إمكانية التصدير المباشر لملفات Excel و PDF.",
+    "url": "article-jdwl-aldrws-almdrsy.html",
+    "category": "Apps",
+    "image": "assets/images/1787488624742_file_00000000774c81f48e967e026feec8bc.webp"
+  },
+  {
+    "title": "سجل الطالب | تطبيق إدارة الطلاب والحضور والدرجات للمعلمين",
+    "desc": "تطبيق عربي لتنظيم بيانات الطلاب وإدارة الحضور والغياب والدرجات والسلوك والملاحظات والتقارير، مع حفظ البيانات محليًا على الجهاز.",
+    "url": "article-sjl-altalb-ttbyq-eda.html",
+    "category": "Apps",
+    "image": "assets/images/1787480730280_file_000000007fdc81f4bb1822c0898a3887.webp"
+  },
+  {
+    "title": "حقيقة فحص التطبيقات: كيف يخدع المبرمجون برامج الحماية و VirusTotal؟",
+    "desc": "\"هل تعتقد أن فحص التطبيقات ببرامج الحماية ومواقع مثل VirusTotal يكفي؟",
+    "url": "article-reality_application_testing.html",
+    "category": "Articles",
+    "image": "assets/images/1786463064900_1786463039176.webp"
+  },
+  {
+    "title": "تحذير أمني لمستخدمي أندرويد: لا تمنح صلاحيات Shizuku/ADB للتطبيقات غير الموثوقة",
+    "desc": "تنبيه أمني منسق حول مخاطر صلاحيات Shizuku و ADB.",
+    "url": "article-amny-danger.html",
+    "category": "Articles",
+    "image": "assets/images/1786389453884_1786388249213.webp"
+  },
+  {
+    "title": "تحميل تطبيق Reezn TV لمشاهدة القنوات والأفلام (للهواتف والشاشات)",
+    "desc": "تمتع بمشاهدة القنوات العربية والأجنبية، وأحدث الأفلام والمسلسلات للهواتف وشاشات التلفاز الذكية.\"",
+    "url": "article-download-reezn-tv.html",
+    "category": "Apps",
+    "image": "assets/images/1776362291260_Reezn-TV.webp"
+  },
+  {
+    "title": "خطوات استرجاع مبالغ التقديم على قرعة الحج الإلكترونية",
+    "desc": "خطوات استرجاع مبالغ الـ 50 الف دينار للمتقدمين على الحج قبل قرار التقديم بدون هذه المبالغ عند التقديم على قرعة الحج الإلكترونية",
+    "url": "article-hajj_expenses.html",
+    "category": "Articles",
+    "image": "assets/images/1785568703331_20260801_101759.webp"
+  },
+  {
     "title": "حاسبة الطاقة الشمسية الاحترافية | تصميم منظومات الطاقة بدقة",
     "desc": "التطبيق الهندسي الأول لتصميم منظومات الطاقة الشمسية. احسب عدد الألواح، سعة البطاريات، وأحجام القواطع بدقة معايير NEC العالمية مع استخراج تقارير PDF فنية.",
     "url": "article-hasbh-altaqh-alshmsy.html",
@@ -12,20 +68,6 @@ export const searchIndex = [
     "url": "article-thmyl-ttbyq-althakry.html",
     "category": "APP_Ai",
     "image": "assets/images/1781916373041_20260620_034554.webp"
-  },
-  {
-    "title": "<span class=\"text-blue-600 dark:text-blue-400 text-lg font-bold\">حسابات أكستريم:</span>  (Xtream IPTV) مجانية ومحدثة",
-    "desc": "تحميل أفضل مشغل IPTV بدون إعلانات مع شرح إضافة الأكواد. يتضمن حسابات اكستريم",
-    "url": "article-extreme-accounts-iptv.html",
-    "category": "Sports",
-    "image": "assets/images/1774270463586_20260323_155405.webp"
-  },
-  {
-    "title": "تحميل تطبيق Reezn TV لمشاهدة القنوات والأفلام (للهواتف والشاشات)",
-    "desc": "تمتع بمشاهدة القنوات العربية والأجنبية، وأحدث الأفلام والمسلسلات للهواتف وشاشات التلفاز الذكية.\"",
-    "url": "article-download-reezn-tv.html",
-    "category": "Apps",
-    "image": "assets/images/1776362291260_Reezn-TV.webp"
   },
   {
     "title": "<span class=\"text-blue-600 dark:text-blue-400 font-bold\">Netfly TV:</span> للاندرويد – نسخة VIP + كود التفعيل للشاشات ",

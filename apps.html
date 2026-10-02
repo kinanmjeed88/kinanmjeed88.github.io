@@ -872,20 +872,6 @@ article {
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // Image Fallback
-    const fallbackImage = 'assets/images/me.jpg';
-    document.querySelectorAll('img').forEach(img => {
-        img.onerror = function() {
-            if (this.src.includes(fallbackImage)) return;
-            this.src = fallbackImage;
-            this.alt = 'Image unavailable';
-            this.classList.add('img-fallback-active');
-        };
-        if (img.naturalWidth === 0 && img.complete) {
-             img.src = fallbackImage;
-        }
-    });
-
     // Dynamic Active State for Nav Tabs
     const current = location.pathname.split("/").pop() || "index.html";
     document.querySelectorAll(".nav-tab, .cat-tab").forEach(tab => {

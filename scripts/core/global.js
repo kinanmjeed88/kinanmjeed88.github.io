@@ -27,6 +27,14 @@ export const updateGlobalElements = (htmlContent, fileName = '', pageTitleOverri
         }
     }
 
+    // Remove existing preconnect / speculation rules before prepending to ensure idempotency
+    $('head link[rel="preconnect"][href*="esm.sh"]').remove();
+    $('head link[rel="preconnect"][href*="googletagmanager.com"]').remove();
+    $('head link[rel="preconnect"][href*="pagead2.googlesyndication.com"]').remove();
+    $('head meta[http-equiv="X-UA-Compatible"]').remove();
+    $('head meta[name="referrer"]').remove();
+    $('head script[type="speculationrules"]').remove();
+
     // Preconnect for Performance & Speculation Rules for faster navigation (bfcache optimization)
     const preconnectTags = `
     <link rel="preconnect" href="https://esm.sh" crossorigin>
@@ -57,7 +65,7 @@ export const updateGlobalElements = (htmlContent, fileName = '', pageTitleOverri
         if (src.includes("cdn.onesignal.com") || content.includes("OneSignal")) { $(el).remove(); }
         if (src.includes('googletagmanager.com') || content.includes("gtag(") || src.includes('G-')) { $(el).remove(); }
         // if (src.includes("pagead2.googlesyndication.com") || content.includes("adsbygoogle")) { $(el).remove(); }
-        if (content.includes("document.addEventListener('DOMContentLoaded', () => {") && content.includes("fallbackImage")) { $(el).remove(); }
+        if (content.includes("document.addEventListener('DOMContentLoaded', () => {") && (content.includes("fallbackImage") || content.includes("Dynamic Active State for Nav Tabs"))) { $(el).remove(); }
         // Remove Fuse CDN injection here (handled in search-engine.js module)
         if (src.includes("fuse.js")) { $(el).remove(); }
     });

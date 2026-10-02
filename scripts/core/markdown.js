@@ -43,9 +43,9 @@ export function parseMarkdown(content, renderMode = 'markdown') {
     html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 
     // Lists (Basic handling for - item)
-    // Wrap lists in UL structure if they aren't already
+    // Wrap lists in UL structure if they aren't already (non-greedy and scoped to markdown list items)
     html = html.replace(/^- (.*$)/gim, '<li class="ml-4 list-disc marker:text-blue-500 break-words whitespace-normal">$1</li>');
-    html = html.replace(/(<li.*<\/li>\n?)+/g, '<ul class="list-inside space-y-2 mb-6 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-200 dark:border-gray-700 text-sm w-full">$&</ul>');
+    html = html.replace(/(<li class="ml-4 list-disc[^>]*>.*?<\/li>\n?)+/g, '<ul class="list-inside space-y-2 mb-6 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-200 dark:border-gray-700 text-sm w-full">$&</ul>');
 
     // --- C. Smart Paragraph Wrapping ---
     // Only wrap text blocks in <p> if they are NOT HTML block elements.
