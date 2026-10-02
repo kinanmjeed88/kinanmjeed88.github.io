@@ -120,3 +120,5 @@ jobs:
           git add -f csp-verify-report.txt
           git commit -m "chore(ci): تقرير تحقق CSP بمتصفح حقيقي (مؤقت)" || echo "لا تغييرات"
           git push origin HEAD:arena/01a0fd0d-kinanmjeed88-github-io || echo "فشل الدفع"
+
+# إعادة تشغيل التحقق بعد إصلاح frame-src (تشغيل #2)
