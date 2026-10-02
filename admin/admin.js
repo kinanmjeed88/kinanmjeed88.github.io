@@ -344,22 +344,99 @@ async function compressAndConvertToWebP(file) {
 
 const api = {
     base: () => `https://api.github.com/repos/${ghConfig.owner}/${ghConfig.repo}/contents`,
+    repoApi: () => `https://api.github.com/repos/${ghConfig.owner}/${ghConfig.repo}`,
     headers: () => ({ 'Authorization': `token ${ghConfig.token}`, 'Content-Type': 'application/json' }),
+    _branch: null,
+    async defaultBranch() {
+        if (this._branch) return this._branch;
+        try {
+            const res = await fetch(this.repoApi(), { headers: this.headers() });
+            if (res.ok) { const info = await res.json(); this._branch = info.default_branch || 'main'; }
+        } catch (e) { /* تجاهل */ }
+        return this._branch || 'main';
+    },
     async get(path) {
         const res = await fetch(`${this.base()}/${path}?t=${Date.now()}`, { headers: this.headers() });
-        if (!res.ok) throw new Error(`API Error: ${res.status}`);
+        if (!res.ok) throw new Error(res.status === 404 ? `API Error 404: الملف غير موجود (${path})` : `API Error: ${res.status}`);
         return await res.json();
     },
     async put(path, content, msg, sha = null) {
         const body = { message: msg, content: btoa(unescape(encodeURIComponent(content))) };
         if (sha) body.sha = sha;
         const res = await fetch(`${this.base()}/${path}`, { method: 'PUT', headers: this.headers(), body: JSON.stringify(body) });
-        if (!res.ok) throw new Error('Save Failed');
+        if (!res.ok) throw new Error(`Save Failed (${res.status})`);
         return await res.json();
     },
     async delete(path, sha, msg) {
         const res = await fetch(`${this.base()}/${path}`, { method: 'DELETE', headers: this.headers(), body: JSON.stringify({ message: msg, sha: sha }) });
-        if (!res.ok) throw new Error('Delete Failed');
+        if (!res.ok) throw new Error(`Delete Failed (${res.status})`);
+        return true;
+    },
+    /**
+     * يحذف عدة ملفات داخل Commit واحد عبر Git Data API (بدل Commit لكل ملف).
+     * وإن تعذّر ذلك (صلاحيات/فرع محمي) يرجع تلقائياً إلى الحذف المتسلسل.
+     * @returns {Promise<{atomic: boolean, deleted: string[], skipped: string[]}>}
+     */
+    async deleteFiles(paths, msg) {
+        const list = [...new Set((paths || []).filter(Boolean))];
+        const result = { atomic: false, deleted: [], skipped: [] };
+        if (list.length === 0) return result;
+
+        try {
+            const branch = await this.defaultBranch();
+            const refRes = await fetch(`${this.repoApi()}/git/ref/heads/${encodeURIComponent(branch)}`, { headers: this.headers() });
+            if (!refRes.ok) throw new Error(`ref ${refRes.status}`);
+            const headSha = (await refRes.json()).object.sha;
+
+            const commitRes = await fetch(`${this.repoApi()}/git/commits/${headSha}`, { headers: this.headers() });
+            if (!commitRes.ok) throw new Error(`commit ${commitRes.status}`);
+            const baseTree = (await commitRes.json()).tree.sha;
+
+            const treeRes = await fetch(`${this.repoApi()}/git/trees`, {
+                method: 'POST',
+                headers: this.headers(),
+                body: JSON.stringify({
+                    base_tree: baseTree,
+                    tree: list.map(p => ({ path: p, mode: '100644', type: 'blob', sha: null }))
+                })
+            });
+            if (!treeRes.ok) throw new Error(`tree ${treeRes.status}`);
+            const newTree = (await treeRes.json()).sha;
+
+            const newCommitRes = await fetch(`${this.repoApi()}/git/commits`, {
+                method: 'POST',
+                headers: this.headers(),
+                body: JSON.stringify({ message: msg, tree: newTree, parents: [headSha] })
+            });
+            if (!newCommitRes.ok) throw new Error(`new commit ${newCommitRes.status}`);
+            const newCommit = (await newCommitRes.json()).sha;
+
+            const patchRes = await fetch(`${this.repoApi()}/git/refs/heads/${encodeURIComponent(branch)}`, {
+                method: 'PATCH',
+                headers: this.headers(),
+                body: JSON.stringify({ sha: newCommit, force: false })
+            });
+            if (!patchRes.ok) throw new Error(`update ref ${patchRes.status}`);
+
+            result.atomic = true;
+            result.deleted = list;
+            return result;
+        } catch (e) {
+            console.warn('Atomic delete unavailable, falling back to sequential delete:', e.message || e);
+        }
+
+        // خطة بديلة: حذف كل ملف على حدة (Commit لكل ملف)
+        for (const p of list) {
+            try {
+                const file = await this.get(p);
+                if (!file || !file.sha) { result.skipped.push(p); continue; }
+                await this.delete(p, file.sha, msg);
+                result.deleted.push(p);
+            } catch (err) {
+                result.skipped.push(p);
+            }
+        }
+        return result;
     },
     async uploadImage(file) {
         try {
@@ -635,10 +712,37 @@ window.openEditByIndex = (index) => {
     document.getElementById('postEditor').classList.remove('hidden');
 };
 
+/**
+ * حذف المقال: يحذف ملف البيانات (JSON) وصفحة HTML المولَّدة منه في نفس العملية
+ * حتى لا تبقى صفحات يتيمة مفهرسة في محركات البحث.
+ */
 window.deleteByIndex = async (index) => {
-    if (!confirm('هل أنت متأكد من الحذف؟')) return;
-    const p = cachedPosts[index]; if (!p) return;
-    try { await api.delete(p.path, p.sha, `Delete Post: ${p.slug}`); showToast('تم الحذف بنجاح'); loadPosts(); } catch (e) { alert(e.message); }
+    const p = cachedPosts[index];
+    if (!p) return;
+
+    const htmlPath = `article-${p.slug}.html`;
+    const message = `Delete Post: ${p.slug}`;
+
+    if (!confirm(`سيتم حذف المقال نهائياً:\n\n• ملف البيانات: ${p.path}\n• صفحة HTML المولَّدة: ${htmlPath} (إن وُجدت)\n\nهل أنت متأكد؟`)) return;
+
+    const btn = document.querySelector(`.btn-delete[data-index="${index}"]`);
+    if (btn) btn.disabled = true;
+
+    try {
+        const result = await api.deleteFiles([p.path, htmlPath], message);
+        const skippedHtml = result.skipped.includes(htmlPath);
+
+        if (skippedHtml) {
+            showToast('تم حذف المقال (لا توجد صفحة HTML مولَّدة له)');
+        } else {
+            showToast('تم حذف المقال وصفحته المولَّدة ✓');
+        }
+        loadPosts();
+    } catch (e) {
+        alert('فشل الحذف: ' + e.message);
+    } finally {
+        if (btn) btn.disabled = false;
+    }
 };
 
 // --- Updated savePost ---
