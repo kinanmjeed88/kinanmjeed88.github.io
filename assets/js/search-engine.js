@@ -1,7 +1,7 @@
 
 import { searchIndex } from './search-data.js';
 // Import Fuse.js from CDN
-import Fuse from 'https://esm.sh/fuse.js@7.0.0';
+import Fuse from '/assets/vendor/fuse-7.0.0.mjs';
 
 class TechTouchSearch {
     constructor() {

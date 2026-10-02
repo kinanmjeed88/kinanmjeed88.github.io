@@ -1,9 +1,13 @@
-name: Daily Analytics Update
+name: Analytics & Site Build
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Run at 00:00 everyday
-  workflow_dispatch: # Allow manual trigger
+    # مرة يومياً (00:23 UTC): تحديث أرقام GA4 + إعادة توليد الصفحات بالأرقام الجديدة
+    # (نشر المقالات الجديدة يتم تلقائياً مع كل Commit من اللوحة، وليس عبر هذه المهمة)
+    - cron: '23 0 * * *'
+    # كل 3 ساعات: تحديث أرقام الزوار (24س/48س/شهر/سنة) فقط بدون إعادة بناء
+    - cron: '23 1-23/3 * * *'
+  workflow_dispatch: # تشغيل يدوي من GitHub أو من لوحة التحكم
 
 jobs:
   update-analytics:
@@ -15,6 +19,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -24,17 +30,29 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Fetch Analytics & Build Site
+      - name: Fetch Analytics (GA4)
         env:
           GA4_SECRET_JSON: ${{ secrets.GA4_SERVICE_ACCOUNT }}
-        run: |
-          node scripts/fetch-analytics.js
-          npm run build
+        run: node scripts/fetch-analytics.js
+
+      - name: Rebuild Site (daily / manual only)
+        if: github.event_name == 'workflow_dispatch' || github.event.schedule == '23 0 * * *'
+        run: npm run build
 
       - name: Commit and Push Changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add content/data/analytics.json *.html sitemap.xml
-          git commit -m "chore: daily analytics update" || echo "No changes to commit"
+
+          git add content/data/analytics.json
+          if [ -f content/data/analytics-summary.json ]; then
+            git add content/data/analytics-summary.json
+          fi
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "${{ github.event.schedule }}" = "23 0 * * *" ]; then
+            git add *.html sitemap.xml feed.xml
+          fi
+
+          git commit -m "chore: analytics update" || echo "No changes to commit"
+          git pull --rebase origin main || true
           git push origin HEAD:main

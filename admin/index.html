@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <title>لوحة القيادة | TechTouch CMS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/assets/vendor/tailwind-3.4.17.min.js" integrity="sha384-igm5BeiBt36UU4gqwWS7imYmelpTsZlQ45FZf+XBn9MuJbn4nQr7yx1yFydocC/K" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@1.50.0/dist/umd/lucide.min.js" integrity="sha384-/sIySnlbVLfPSNdgy7yqanP6+Dv4en7FlBure4Rag0mp480bA2f+nTviC6933zkQ" crossorigin="anonymous"></script>
     <style>
         body { font-family: 'Tajawal', sans-serif; }
         .tab-active { background-color: #eff6ff; color: #2563eb; border-right: 3px solid #2563eb; }
@@ -26,9 +26,14 @@
 
     <header class="md:hidden bg-white border-b border-gray-200 p-4 flex justify-between items-center sticky top-0 z-50">
         <h1 class="text-xl font-bold tracking-tight">TechTouch CMS</h1>
-        <button onclick="document.getElementById('sidebar').classList.toggle('translate-x-full')" class="p-2 hover:bg-gray-100 rounded-lg">
-            <i data-lucide="menu"></i>
-        </button>
+        <div class="flex items-center gap-1">
+            <button id="btnDisconnectMobile" onclick="disconnectGithub()" style="display:none" title="تسجيل الخروج / فصل الاتصال" class="p-2 text-red-500 hover:bg-red-50 rounded-lg">
+                <i data-lucide="log-out"></i>
+            </button>
+            <button onclick="document.getElementById('sidebar').classList.toggle('translate-x-full')" class="p-2 hover:bg-gray-100 rounded-lg">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
     </header>
 
     <aside id="sidebar" class="w-64 bg-white border-l border-gray-200 h-screen fixed right-0 top-0 z-[60] flex flex-col shadow-lg transition-transform duration-300 transform translate-x-full md:translate-x-0">
@@ -74,9 +79,19 @@
             </button>
         </nav>
 
-        <div class="p-4 border-t border-gray-100">
+        <div class="p-4 border-t border-gray-100 space-y-2">
+            <div class="flex items-start gap-2 text-[11px] text-gray-600 bg-gray-50 border border-gray-100 rounded-lg px-2 py-1.5">
+                <span id="ghStatusDot" class="w-2 h-2 rounded-full bg-gray-300 mt-1 shrink-0"></span>
+                <div class="min-w-0">
+                    <div id="ghStatusText" class="font-bold truncate">غير متصل</div>
+                    <div id="ghStatusSub" class="text-gray-400 truncate dir-ltr"></div>
+                </div>
+            </div>
             <button onclick="toggleGithubSettings()" class="w-full flex items-center gap-2 text-xs text-gray-400 hover:text-blue-600">
                 <i data-lucide="settings"></i> إعدادات الاتصال
+            </button>
+            <button id="btnDisconnect" onclick="disconnectGithub()" style="display:none" class="w-full items-center gap-2 text-xs text-red-500 hover:text-red-700 font-bold">
+                <i data-lucide="log-out"></i> تسجيل الخروج / فصل الاتصال
             </button>
         </div>
     </aside>
@@ -118,15 +133,59 @@
             </div>
         </div>
 
-        <div id="ghModal" class="hidden fixed inset-0 bg-black/60 z-[70] flex items-center justify-center backdrop-blur-sm px-4">
-            <div class="bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl animate-fade-in">
-                <h2 class="text-xl font-bold mb-4 flex items-center gap-2"><i data-lucide="github"></i> ربط المستودع</h2>
-                <div class="space-y-4">
-                    <input type="text" id="ghOwner" class="w-full p-3 border rounded-lg bg-gray-50" placeholder="GitHub Username">
-                    <input type="text" id="ghRepo" class="w-full p-3 border rounded-lg bg-gray-50" placeholder="Repository Name">
-                    <input type="password" id="ghToken" class="w-full p-3 border rounded-lg bg-gray-50" placeholder="Personal Access Token (Repo Scope)">
-                    <button onclick="saveGhSettings()" class="w-full bg-black text-white py-3 rounded-xl font-bold hover:bg-gray-800">حفظ واتصال</button>
-                    <button onclick="toggleGithubSettings()" class="w-full text-gray-500 py-2">إلغاء</button>
+        <div id="ghModal" class="hidden fixed inset-0 bg-black/60 z-[70] flex items-center justify-center backdrop-blur-sm px-4 py-6">
+            <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl max-h-[92vh] overflow-y-auto">
+                <div class="p-5 border-b bg-gray-50 rounded-t-2xl flex items-center justify-between sticky top-0 z-10">
+                    <h2 class="text-lg font-bold flex items-center gap-2"><i data-lucide="github"></i> تسجيل الدخول / ربط المستودع</h2>
+                    <button id="ghCancelBtn" onclick="toggleGithubSettings()" style="display:none" class="p-1 hover:bg-gray-200 rounded"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <div class="p-5 space-y-4">
+
+                    <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 text-xs leading-relaxed">
+                        <p class="font-bold text-blue-800 mb-2 flex items-center gap-1"><i data-lucide="shield-check" class="w-4 h-4"></i> استخدم رمز وصول دقيق الصلاحيات (Fine-grained PAT)</p>
+                        <ol class="list-decimal list-inside space-y-1 text-blue-900">
+                            <li>من GitHub: <b>Settings → Developer settings → Personal access tokens → Fine-grained tokens</b></li>
+                            <li><b>Repository access:</b> اختر <b>Only select repositories</b> ثم مستودع الموقع فقط.</li>
+                            <li><b>Repository permissions</b> ← <b>Contents: Read and write</b> <span class="text-blue-700">(مطلوب)</span></li>
+                            <li><b>Actions: Read and write</b> <span class="text-gray-500">(اختياري — فقط لزر «جلب من Google Analytics»)</span></li>
+                            <li>انسخ الرمز (يبدأ بـ <code class="dir-ltr bg-white px-1 rounded border">github_pat_</code>) والصقه أدناه.</li>
+                        </ol>
+                        <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 mt-3 font-bold text-blue-700 hover:underline">
+                            <i data-lucide="external-link" class="w-3 h-3"></i> إنشاء رمز دقيق الصلاحيات الآن
+                        </a>
+                    </div>
+
+                    <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700 leading-relaxed">
+                        <p class="font-bold mb-1 flex items-center gap-1"><i data-lucide="alert-triangle" class="w-4 h-4"></i> تحذير أمني</p>
+                        لا تستخدم <b>Classic Token</b> (يبدأ بـ <span class="dir-ltr">ghp_</span>) لأنه يمنح صلاحية <span class="dir-ltr">repo</span> الكاملة على <b>كل</b> مستودعات حسابك. استخدم دائماً Fine-grained PAT مقيّداً بمستودع الموقع وبصلاحية <span class="dir-ltr">Contents</span> فقط.
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div><label class="label">اسم المستخدم (Owner)</label><input type="text" id="ghOwner" class="input-field dir-ltr" placeholder="GitHub Username" autocomplete="off"></div>
+                        <div><label class="label">المستودع (Repo)</label><input type="text" id="ghRepo" class="input-field dir-ltr" placeholder="Repository Name" autocomplete="off"></div>
+                    </div>
+
+                    <div>
+                        <label class="label">رمز الوصول (Token)</label>
+                        <div class="relative">
+                            <input type="password" id="ghToken" class="input-field dir-ltr pr-10" placeholder="github_pat_..." autocomplete="off" spellcheck="false">
+                            <button type="button" onclick="toggleTokenVisibility()" title="إظهار/إخفاء" class="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 text-gray-400 hover:text-gray-600">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <label class="flex items-start gap-2 text-xs text-gray-600 cursor-pointer">
+                        <input type="checkbox" id="ghRemember" class="accent-blue-600 mt-0.5">
+                        <span>تذكّرني على هذا الجهاز (حفظ الرمز في هذا المتصفح). <span class="text-gray-400">بدون تحديده يُمحى الرمز تلقائياً عند إغلاق التبويب.</span></span>
+                    </label>
+
+                    <div id="ghValidationBox" class="hidden text-xs rounded-xl p-3 border leading-relaxed"></div>
+
+                    <button onclick="saveGhSettings()" id="btnSaveGh" class="w-full bg-black text-white py-3 rounded-xl font-bold hover:bg-gray-800 flex items-center justify-center gap-2">
+                        <i data-lucide="log-in" class="w-4 h-4"></i> حفظ واتصال
+                    </button>
+                    <p class="text-[11px] text-gray-400 text-center leading-relaxed">لا يُرسل الرمز إلى أي خادم وسيط — يتصل متصفحك بـ GitHub مباشرة. يمكنك إبطال الرمز من GitHub أو مسحه هنا بزر «تسجيل الخروج / فصل الاتصال».</p>
                 </div>
             </div>
         </div>
@@ -158,6 +217,10 @@
                         <div class="col-span-2 md:col-span-1 grid grid-cols-2 gap-2">
                             <div><label class="label">التاريخ</label><input type="date" id="pDate" class="input-field dir-ltr"></div>
                             <div><label class="label">الوقت</label><input type="time" id="pTime" class="input-field dir-ltr"></div>
+                            <div class="col-span-2 flex items-center justify-between text-[11px] text-gray-400 -mt-1">
+                                <span>🕒 التوقيت المعتمد: بغداد (UTC+03:00)</span>
+                                <span id="pTimeHint" class="font-bold text-blue-500"></span>
+                            </div>
                         </div>
                         
                         <div class="col-span-2 md:col-span-1"><label class="label">الصورة</label><div class="flex gap-2"><input type="file" id="pFile" class="hidden" onchange="handleFileSelect(this, 'pImage')"><button onclick="document.getElementById('pFile').click()" class="btn-secondary whitespace-nowrap"><i data-lucide="image"></i> رفع</button><input type="text" id="pImage" class="input-field dir-ltr" placeholder="رابط الصورة أو المسار..."></div></div>
@@ -274,9 +337,33 @@
         </section>
 
         <section id="sec-stats" class="hidden-section space-y-6">
-            <h2 class="text-2xl font-bold mb-6">إحصائيات المنشورات والمشاهدات</h2>
+            <div class="flex justify-between items-center flex-wrap gap-3 mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold">التحليلات والإحصائيات</h2>
+                    <p class="text-xs text-gray-400 mt-1">أرقام الزوار محدّثة تلقائياً من Google Analytics 4 كل 3 ساعات.</p>
+                </div>
+                <button onclick="loadStats()" id="btnRefreshStats" class="btn-secondary py-2 px-3 text-sm"><i data-lucide="refresh-cw" class="w-4 h-4"></i> تحديث العرض</button>
+            </div>
             <div id="statsLoader" class="flex justify-center py-12"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>
             <div id="statsContent" class="hidden space-y-8">
+
+                <!-- ======================= زوار الموقع حسب الفترة ======================= -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="flex justify-between items-center flex-wrap gap-3 mb-5">
+                        <h3 class="text-lg font-bold flex items-center gap-2"><i data-lucide="users" class="text-blue-500"></i> زوار الموقع حسب الفترة</h3>
+                        <div class="flex items-center gap-2">
+                            <span id="visitorUpdatedAt" class="text-[11px] text-gray-400"></span>
+                            <button id="btnDispatchAnalytics" onclick="dispatchAnalyticsWorkflow()" title="تشغيل مهمة GitHub Actions لجلب أحدث الأرقام من Google Analytics" class="text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 transition-colors">
+                                <i data-lucide="cloud-download" class="w-3 h-3"></i> جلب من Google Analytics
+                            </button>
+                        </div>
+                    </div>
+                    <div id="visitorPeriodsGrid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                        <div class="col-span-full text-center py-6 text-gray-400 text-sm">جاري تحميل أرقام الزوار...</div>
+                    </div>
+                    <div id="visitorPeriodsNote" class="hidden mt-4 text-xs rounded-xl p-3 border"></div>
+                </div>
+
                 <!-- Overview Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
