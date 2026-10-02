@@ -21,65 +21,51 @@ jobs:
           ref: arena/01a0fd0d-kinanmjeed88-github-io
           fetch-depth: 1
 
-      - name: فحص الروابط المثبّتة (رؤوس CORS + بصمات SRI)
+      - name: "تنزيل Tailwind 3.4.17 للاستضافة الذاتية + كتابة إشعارات الطرف الثالث"
         run: |
-          OUT=cdn-audit-report.txt
-          : > "$OUT"
+          mkdir -p assets/vendor
           UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
-          probe () {
-            url="$1"; name="$2"
-            {
-              echo "=================================================================="
-              echo "URL       : $url"
-            } >> "$OUT"
-            hdr=$(mktemp)
-            code=$(curl -sSL -A "$UA" -o "/tmp/$name" -D "$hdr" -w '%{http_code}' "$url" || echo "000")
-            eff=$(curl -sSL -A "$UA" -o /dev/null -w '%{url_effective}' "$url" || echo "-")
-            {
-              echo "HTTP      : $code   (bytes: $(wc -c < "/tmp/$name"))"
-              echo "EFFECTIVE : $eff"
-              echo "ACAO      : $(grep -i '^access-control-allow-origin' "$hdr" | tr -d '\r' | tail -1)"
-              echo "CTYPE     : $(grep -i '^content-type' "$hdr" | tr -d '\r' | tail -1)"
-              echo "CACHE     : $(grep -i '^cache-control' "$hdr" | tr -d '\r' | tail -1)"
-              echo "LASTMOD   : $(grep -i '^last-modified' "$hdr" | tr -d '\r' | tail -1)"
-              echo "INTEGRITY : sha384-$(openssl dgst -sha384 -binary "/tmp/$name" | openssl base64 -A)"
-              echo "SHA256    : sha256-$(openssl dgst -sha256 -binary "/tmp/$name" | openssl base64 -A)"
-              echo "MARKERS   : tailwind=$(grep -c tailwind "/tmp/$name" || true) createIcons=$(grep -c createIcons "/tmp/$name" || true)"
-              echo "FIRST90   : $(head -c 90 "/tmp/$name" | tr '\n' ' ')"
-            } >> "$OUT"
-          }
-          probe "https://cdn.tailwindcss.com/3.4.19" tw_v3419.js
-          probe "https://cdn.tailwindcss.com" tw_root.js
-          probe "https://unpkg.com/lucide@1.50.0/dist/umd/lucide.min.js" lucide_unpkg.js
-          probe "https://cdn.jsdelivr.net/npm/lucide@1.50.0/dist/umd/lucide.min.js" lucide_jsdelivr.js
-          cat "$OUT"
+          URL="https://cdn.tailwindcss.com/3.4.17"
+          DEST="assets/vendor/tailwind-3.4.17.min.js"
+          curl -sSL -A "$UA" -o "$DEST" "$URL"
+          SIZE=$(wc -c < "$DEST")
+          echo "الحجم: $SIZE بايت"
+          test "$SIZE" -gt 300000 || { echo "❌ الملف أصغر من المتوقع"; exit 1; }
+          grep -q "tailwind" "$DEST" || { echo "❌ الملف لا يبدو بناء Tailwind"; exit 1; }
+          head -c 120 "$DEST" | tr '\n' ' '; echo
+          SRI384="sha384-$(openssl dgst -sha384 -binary "$DEST" | openssl base64 -A)"
+          SRI256="sha256-$(openssl dgst -sha256 -binary "$DEST" | openssl base64 -A)"
+          echo "INTEGRITY384=$SRI384"
+          echo "INTEGRITY256=$SRI256"
+          node -e "require('vm').Script(require('fs').readFileSync('$DEST','utf8')); console.log('✅ الملف صالح نحوياً')"
+          cat > assets/vendor/THIRD-PARTY-NOTICES.md <<EOF
+          # إشعارات مكتبات الطرف الثالث
 
-      - name: "فحص CORS مع إرسال Origin — هل يقبل المتصفح SRI؟"
-        run: |
-          OUT2=cdn-audit-report2.txt
-          : > "$OUT2"
-          raw () {
-            url="$1"
-            {
-              echo "##################################################################"
-              echo "URL: $url"
-              echo "--- رؤوس عادية (بلا Origin) ---"
-              curl -sSL -A "$UA" -D - -o /dev/null "$url" | tr -d '\r' | sed -n '1,25p'
-              echo "--- رؤوس مع Origin: https://kinantouch.com ---"
-              curl -sSL -A "$UA" -H "Origin: https://kinantouch.com" -D - -o /dev/null "$url" | tr -d '\r' | grep -iE '^(HTTP/|access-control|vary|content-type|cache-control|age|cf-cache-status|server|timing-allow)' 
-              echo "--- رؤوس مع Origin + طلب مسبق OPTIONS ---"
-              curl -sS -X OPTIONS -A "$UA" -H "Origin: https://kinantouch.com" -H "Access-Control-Request-Method: GET" -D - -o /dev/null "$url" | tr -d '\r' | grep -iE '^(HTTP/|access-control|allow)' || echo "(لا استجابة OPTIONS)"
-            } >> "$OUT2"
-          }
-          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
-          raw "https://cdn.tailwindcss.com/3.4.17"
-          raw "https://unpkg.com/lucide@1.50.0/dist/umd/lucide.min.js"
-          cat "$OUT2"
+          ## Tailwind CSS — Play CDN build v3.4.17 (مستضاف ذاتياً)
+          - **المصدر الأصلي:** $URL
+          - **الترخيص:** MIT © Tailwind Labs, Inc.
+          - **سبب الاستضافة الذاتية:** خادم \`cdn.tailwindcss.com\` لا يرسل ترويسة \`Access-Control-Allow-Origin\`
+            (تم التحقق عملياً بواسطة مهمة Actions)، لذا لا يمكن استخدام Subresource Integrity (SRI) معه،
+            لأن المتصفح يمنع التحقق من التكامل للموارد عبر الأصل بدون CORS. الاستضافة الذاتية تُلغي
+            الاعتماد على أي طرف ثالث وقت التشغيل وتسمح بالتحقق من البصمة.
+          - **SHA-384 (Integrity):** $SRI384
+          - **SHA-256:** $SRI256
+          - **الحجم:** $SIZE بايت
+          - **تاريخ الجلب:** $(date -u +%Y-%m-%d)
 
-      - name: حفظ التقريرين في الفرع (لأن سجلات Actions غير قابلة للتنزيل من بيئة العمل)
+          ## Lucide Icons v1.50.0
+          - **المصدر:** https://unpkg.com/lucide@1.50.0/dist/umd/lucide.min.js
+          - **الترخيص:** ISC © Lucide Contributors
+          - **SRI (SHA-384):** sha384-/sIySnlbVLfPSNdgy7yqanP6+Dv4en7FlBure4Rag0mp480bA2f+nTviC6933zkQ
+          - يُحمَّل من CDN مع \`integrity\` + \`crossorigin="anonymous"\` (unpkg يرسل \`Access-Control-Allow-Origin: *\`).
+          EOF
+          echo "---- التقرير ----"
+          cat assets/vendor/THIRD-PARTY-NOTICES.md
+
+      - name: حفظ الملفات في الفرع (سجلات Actions غير قابلة للتنزيل من بيئة العمل)
         run: |
           git config user.name "cdn-audit"
           git config user.email "cdn-audit@users.noreply.github.com"
-          git add cdn-audit-report.txt cdn-audit-report2.txt
-          git commit -m "chore(ci): تقرير فحص CDN المؤقت (يُحذف لاحقاً)" || echo "لا تغييرات"
+          git add assets/vendor/
+          git commit -m "chore(vendor): استضافة ذاتية لـ Tailwind 3.4.17 + إشعارات الطرف الثالث" || echo "لا تغييرات"
           git push origin HEAD:arena/01a0fd0d-kinanmjeed88-github-io
