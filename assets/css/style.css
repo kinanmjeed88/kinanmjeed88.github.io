@@ -71,8 +71,6 @@ body {
     max-width: 100vw;
     margin: 0; 
     padding: 0; 
-    /* CRITICAL FIX: Override Google's injected padding completely */
-    padding-bottom: 0 !important;
     overflow-x: hidden; 
     overflow-x: clip; 
     background-color: var(--color-bg-light);
@@ -132,7 +130,7 @@ p, li { font-size: 1rem; line-height: 1.8; }
 }
 
 /* Media Constraints */
-img, iframe, video, object, embed, canvas { 
+img, video, object, embed, canvas { 
     max-width: 100%; 
     height: auto; 
     display: block; 
@@ -140,6 +138,14 @@ img, iframe, video, object, embed, canvas {
     margin-right: auto;
     border: none;
     vertical-align: bottom; 
+}
+
+iframe {
+    max-width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border: none;
 }
 
 .prose img { 
@@ -194,13 +200,23 @@ html[dir="rtl"] .adsbygoogle {
     text-align: center;
 }
 
-/* Fix for Anchor Ads Close Button (Prevents cutting off the arrow) */
+/* Fix for Anchor Ads Close Button (Allow AdSense to control iframe dimensions) */
 .adsbygoogle-noablate iframe,
 iframe[name*="google_ads_iframe"],
 iframe[src*="googleads"] {
     border: 0;
-    height: auto !important;
-    max-height: none !important;
+}
+
+.ad-placement-wrapper,
+.ad-top-content,
+.ad-mid-content,
+.ad-pre-summary,
+.ad-mid-related,
+.ad-mid-related-google {
+    width: 100%;
+    min-width: 250px;
+    display: block;
+    clear: both;
 }
 
 /* ========================================= */
@@ -659,22 +675,6 @@ footer section:last-child {
 footer .ad-container {
     margin-bottom: 0 !important;
     min-height: 0 !important; 
-}
-
-/* Kill generic empty elements injected at bottom */
-body > div:empty,
-body > span:empty {
-    display: none !important;
-    height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
-
-/* Specifically target Google auto-placed containers */
-.google-auto-placed:empty,
-.adsbygoogle-noablate:empty {
-    display: none !important;
-    height: 0 !important;
 }
 
 /* Prevent any injected iframe/script from taking space at bottom */

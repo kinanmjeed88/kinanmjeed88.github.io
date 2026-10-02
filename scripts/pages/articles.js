@@ -6,7 +6,7 @@ import { safeWrite } from '../utils/fs.js';
 import { updateGlobalElements } from '../core/global.js';
 import { cleanPath, escapeHtml, escapeXml, stripHtml, toAbsoluteUrl } from '../utils/helpers.js';
 import { parseMarkdown } from '../core/markdown.js';
-import { getCatLabel, generateAdBannerHTML, FIXED_AD_UNIT } from '../core/renderer.js';
+import { getCatLabel, generateAdBannerHTML, FIXED_AD_UNIT, AUTO_FORMAT_AD_UNIT } from '../core/renderer.js';
 import { BASE_URL } from '../config/constants.js';
 
 export async function generateIndividualArticles({ allPosts, postsByCategory, aboutData, channelsData, categoriesData, analyticsData }) {
@@ -159,31 +159,115 @@ export async function generateIndividualArticles({ allPosts, postsByCategory, ab
         
         $('.share-buttons-container').remove();
 
-        // 1. إعلان بداية المنشور تحت الصورة أو الفيديو الأول (إذا وجد)
-        const mediaElements = $content('img, iframe, video');
-        if (mediaElements.length > 0) {
-            $content(mediaElements[0]).parent().after(`
-            <div class="ad-top-content mb-4 mt-2">
-               ${FIXED_AD_UNIT}
-            </div>`);
-        } else {
-            const firstParagraph = $content('p').first();
-            if (firstParagraph.length) {
-               firstParagraph.after(`
-               <div class="ad-top-content mb-4 mt-2">
-                  ${FIXED_AD_UNIT}
-               </div>`);
+        // Validation helper: prevent injecting ads inside narrow or invalid containers (grid, flex, ul, li, etc.)
+        const isInvalidAdParent = (el) => {
+            if (!el || !el.length || !el[0] || !el[0].tagName) return false;
+            const tag = el[0].tagName.toLowerCase();
+            if (['ul', 'ol', 'li', 'table', 'thead', 'tbody', 'tr', 'td', 'p', 'span', 'a', 'button', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(tag)) {
+                return true;
+            }
+            const classes = (el.attr('class') || '').trim().split(/\s+/);
+            if (classes.some(c => ['grid', 'inline-grid', 'flex', 'inline-flex', 'hidden'].includes(c) || c.endsWith(':grid') || c.endsWith(':flex') || c.endsWith(':hidden'))) {
+                return true;
+            }
+            return false;
+        };
+
+        // Climb up DOM tree until the element's parent and all ancestors are safe full-width block containers
+        const resolveSafeSiblingTarget = (el) => {
+            if (!el || !el.length) return null;
+            let curr = el;
+            let ancestor = curr.parent();
+            while (ancestor && ancestor.length && ancestor[0] && ancestor[0].type !== 'root') {
+                if (isInvalidAdParent(ancestor)) {
+                    curr = ancestor;
+                }
+                ancestor = ancestor.parent();
+            }
+            return curr;
+        };
+
+        // Collect root-level block elements (> p, > div, > section, > h2, > h3)
+        let rootContainer = $content.root();
+        let rootBlocks = rootContainer.children('p, div, section, h2, h3').toArray();
+
+        // Unwrap single outer wrapper div/section (including nested single wrappers)
+        while (rootBlocks.length === 1 && ['div', 'section'].includes(rootBlocks[0].tagName.toLowerCase()) && !isInvalidAdParent($content(rootBlocks[0]))) {
+            rootContainer = $content(rootBlocks[0]);
+            rootBlocks = rootContainer.children('p, div, section, h2, h3').toArray();
+        }
+
+        // If the wrapper has a main body container (e.g. Hero + Body wrapper + Footer, or decorative bg + relative wrapper), expand safe multi-child block containers
+        for (let pass = 0; pass < 2 && rootBlocks.length <= 3; pass++) {
+            const expanded = [];
+            rootBlocks.forEach(node => {
+                const $node = $content(node);
+                const cls = ($node.attr('class') || '').trim().split(/\s+/);
+                // Skip purely decorative absolute background divs
+                if (cls.includes('absolute') && $node.text().trim() === '') return;
+                const subBlocks = $node.children('p, div, section, h2, h3').toArray();
+                if (!isInvalidAdParent($node) && subBlocks.length >= 2) {
+                    expanded.push(...subBlocks);
+                } else {
+                    expanded.push(node);
+                }
+            });
+            if (expanded.length > 0) {
+                rootBlocks = expanded;
             }
         }
 
-        // 2. إعلان في وسط المنشور
-        const paragraphs = $content('p');
-        if (paragraphs.length > 4) {
-            const midPoint = Math.floor(paragraphs.length / 2);
-            $content(paragraphs[midPoint]).after(`
-            <div class="ad-mid-content mb-4 mt-4">
-               ${FIXED_AD_UNIT}
-            </div>`);
+        let topTargetNode = null;
+
+        // 1. إعلان بداية المنشور تحت الصورة أو الفيديو الأول (إذا وجد) أو بعد أول عنصر جذري
+        const mediaElements = $content('img, iframe, video');
+        if (mediaElements.length > 0) {
+            const firstMedia = $content(mediaElements[0]);
+            const candidate = firstMedia.parent().length && firstMedia.parent()[0].type !== 'root' ? firstMedia.parent() : firstMedia;
+            const safeTop = resolveSafeSiblingTarget(candidate);
+            if (safeTop && safeTop.length) {
+                topTargetNode = safeTop[0];
+                safeTop.after(`
+                <div class="ad-top-content mb-4 mt-2">
+                   ${FIXED_AD_UNIT}
+                </div>`);
+            }
+        } else if (rootBlocks.length > 0) {
+            const safeTop = resolveSafeSiblingTarget($content(rootBlocks[0]));
+            if (safeTop && safeTop.length) {
+                topTargetNode = safeTop[0];
+                safeTop.after(`
+                <div class="ad-top-content mb-4 mt-2">
+                   ${FIXED_AD_UNIT}
+                </div>`);
+            }
+        }
+
+        // 2. إعلان في وسط المنشور (يعتمد على عناصر المستوى الأول مع منع الحقن داخل grid/flex/ul/li)
+        if (rootBlocks.length >= 2) {
+            let midPoint = Math.floor(rootBlocks.length / 2);
+            let safeMid = resolveSafeSiblingTarget($content(rootBlocks[midPoint]));
+
+            // Avoid placing mid ad on the exact same element as top ad
+            if (safeMid && safeMid.length && safeMid[0] === topTargetNode) {
+                const altIndex = midPoint + 1 < rootBlocks.length ? midPoint + 1 : rootBlocks.length - 1;
+                safeMid = resolveSafeSiblingTarget($content(rootBlocks[altIndex]));
+            }
+
+            if (safeMid && safeMid.length && safeMid[0] !== topTargetNode && !isInvalidAdParent(safeMid.parent())) {
+                safeMid.after(`
+                <div class="ad-mid-content mb-4 mt-4">
+                   ${FIXED_AD_UNIT}
+                </div>`);
+            }
+        } else if (rootBlocks.length === 1) {
+            const onlyBlock = resolveSafeSiblingTarget($content(rootBlocks[0]));
+            if (onlyBlock && onlyBlock.length && onlyBlock[0] !== topTargetNode && !isInvalidAdParent(onlyBlock.parent())) {
+                onlyBlock.after(`
+                <div class="ad-mid-content mb-4 mt-4">
+                   ${FIXED_AD_UNIT}
+                </div>`);
+            }
         }
 
         $('article').html($content.html()); 
@@ -192,7 +276,7 @@ export async function generateIndividualArticles({ allPosts, postsByCategory, ab
         if (post.summary) {
             $('article').append(`
             <div class="ad-pre-summary mb-4 mt-4">
-                ${FIXED_AD_UNIT}
+                ${AUTO_FORMAT_AD_UNIT}
             </div>`);
         }
 
@@ -297,16 +381,16 @@ export async function generateIndividualArticles({ allPosts, postsByCategory, ab
             });
             relatedHTML += `</div>`;
 
-            // 4. إعلان مخصص + إعلان تلقائي جوجل بين المقالات المقترحة (قد يعجبك أيضاً)
+            // 4. إعلان مخصص + إعلان تلقائي جوجل بين المقالات المقترحة (قد يعجبك أيضاً) مع فاصل واضح
             const adHTML = generateAdBannerHTML(aboutData);
             if (adHTML) {
-                relatedHTML += `<div class="ad-mid-related mb-6 mt-4">${adHTML}</div>`;
+                relatedHTML += `<div class="ad-mid-related mb-6 mt-4" style="margin-bottom: 24px; padding-bottom: 8px;">${adHTML}</div>`;
             }
             
-            // إعلان جوجل التلقائي قبل القائمة الجانبية (List)
+            // إعلان جوجل المتجاوب قبل القائمة الجانبية (List)
             relatedHTML += `
-            <div class="ad-mid-related-google mb-6 mt-4">
-                ${FIXED_AD_UNIT}
+            <div class="ad-mid-related-google mb-6 mt-4" style="margin-top: 24px; margin-bottom: 24px;">
+                ${AUTO_FORMAT_AD_UNIT}
             </div>`;
 
             if (listPosts.length > 0) {
