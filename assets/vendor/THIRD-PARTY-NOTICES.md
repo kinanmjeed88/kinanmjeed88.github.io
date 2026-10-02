@@ -16,3 +16,11 @@
 - **الترخيص:** ISC © Lucide Contributors
 - **SRI (SHA-384):** sha384-/sIySnlbVLfPSNdgy7yqanP6+Dv4en7FlBure4Rag0mp480bA2f+nTviC6933zkQ
 - يُحمَّل من CDN مع integrity + crossorigin=anonymous (unpkg يرسل Access-Control-Allow-Origin: *).
+
+## Fuse.js v7.0.0 (مستضاف ذاتياً)
+- **المصدر:** حزمة npm الرسمية `fuse.js@7.0.0` (ملف `dist/fuse.mjs`)
+- **الترخيص:** Apache-2.0 © Kiro Risk
+- **SHA-384 (Integrity):** sha384-xZH1QJAP3pxvWYqB74MvWTHXRLEe+5oPmgoSe0mLQ7N0SmO2ZTIq3GBbJH+bMGYm
+- **الحجم:** 41288 بايت
+- **ملاحظة:** كان يُستورد من `https://esm.sh/fuse.js@7.0.0` — ووحدات ES لا تدعم SRI إطلاقاً
+  (التحقق من التكامل خاصية لوسوم `<script>`/`<link>` فقط)، لذا الاستضافة الذاتية هي الطريقة الوحيدة لتأمينه.

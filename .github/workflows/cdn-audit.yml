@@ -21,59 +21,29 @@ jobs:
           ref: arena/01a0fd0d-kinanmjeed88-github-io
           fetch-depth: 1
 
-      - name: "تنزيل Tailwind 3.4.17 + إشعارات الطرف الثالث (مع تشخيص كامل)"
-        id: work
+      - name: "فحص Font Awesome 6.5.1 (cdnjs) — بصمة SRI + رؤوس CORS"
         continue-on-error: true
         run: |
           mkdir -p /tmp/logs
-          exec > /tmp/logs/audit.log 2>&1
+          exec > /tmp/logs/fa.log 2>&1
           set -x
-          mkdir -p assets/vendor
           UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
-          URL="https://cdn.tailwindcss.com/3.4.17"
-          DEST="assets/vendor/tailwind-3.4.17.min.js"
-          curl -sSL -A "$UA" -o "$DEST" "$URL"
-          echo "curl exit: $?"
-          SIZE=$(wc -c < "$DEST")
-          echo "SIZE=$SIZE"
-          head -c 200 "$DEST"; echo
-          tail -c 120 "$DEST"; echo
-          SRI384="sha384-$(openssl dgst -sha384 -binary "$DEST" | openssl base64 -A)"
-          SRI256="sha256-$(openssl dgst -sha256 -binary "$DEST" | openssl base64 -A)"
-          echo "INTEGRITY384=$SRI384"
-          echo "INTEGRITY256=$SRI256"
-          node -e "require('vm').Script(require('fs').readFileSync('$DEST','utf8')); console.log('SYNTAX_OK')" || echo "SYNTAX_FAIL"
-          {
-            echo "# إشعارات مكتبات الطرف الثالث"
-            echo
-            echo "## Tailwind CSS — Play CDN build v3.4.17 (مستضاف ذاتياً)"
-            echo "- **المصدر الأصلي:** $URL"
-            echo "- **الترخيص:** MIT © Tailwind Labs, Inc."
-            echo "- **سبب الاستضافة الذاتية:** خادم cdn.tailwindcss.com لا يرسل ترويسة Access-Control-Allow-Origin،"
-            echo "  لذا لا يمكن استخدام Subresource Integrity (SRI) معه لأن المتصفح يمنع التحقق من التكامل"
-            echo "  للموارد عبر الأصل بدون CORS. الاستضافة الذاتية تُلغي الاعتماد على طرف ثالث وقت التشغيل."
-            echo "- **SHA-384 (Integrity):** $SRI384"
-            echo "- **SHA-256:** $SRI256"
-            echo "- **الحجم:** $SIZE بايت"
-            echo "- **تاريخ الجلب:** $(date -u +%Y-%m-%d)"
-            echo
-            echo "## Lucide Icons v1.50.0"
-            echo "- **المصدر:** https://unpkg.com/lucide@1.50.0/dist/umd/lucide.min.js"
-            echo "- **الترخيص:** ISC © Lucide Contributors"
-            echo "- **SRI (SHA-384):** sha384-/sIySnlbVLfPSNdgy7yqanP6+Dv4en7FlBure4Rag0mp480bA2f+nTviC6933zkQ"
-            echo "- يُحمَّل من CDN مع integrity + crossorigin=anonymous (unpkg يرسل Access-Control-Allow-Origin: *)."
-          } > assets/vendor/THIRD-PARTY-NOTICES.md
-          echo "NOTICES_WRITTEN"
-          ls -la assets/vendor/
-          echo "DONE_OK"
+          URL="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+          curl -sSL -A "$UA" -o /tmp/fa.css "$URL"
+          echo "SIZE=$(wc -c < /tmp/fa.css)"
+          head -c 200 /tmp/fa.css; echo
+          echo "SRI384=sha384-$(openssl dgst -sha384 -binary /tmp/fa.css | openssl base64 -A)"
+          echo "SRI256=sha256-$(openssl dgst -sha256 -binary /tmp/fa.css | openssl base64 -A)"
+          echo "--- رؤوس مع Origin ---"
+          curl -sSL -A "$UA" -H "Origin: https://kinantouch.com" -D - -o /dev/null "$URL" | tr -d '\r' | grep -iE '^(HTTP/|access-control|content-type|cache-control|last-modified)'
+          echo "DONE"
 
       - name: حفظ النتائج في الفرع (حتى عند الفشل)
         if: always()
         run: |
-          mkdir -p assets/vendor
-          cp /tmp/logs/audit.log assets/vendor/_audit-log.txt 2>/dev/null || echo "لا سجل" > assets/vendor/_audit-log.txt
+          cp /tmp/logs/fa.log cdn-fa-report.txt 2>/dev/null || echo "لا سجل" > cdn-fa-report.txt
           git config user.name "cdn-audit"
           git config user.email "cdn-audit@users.noreply.github.com"
-          git add -A assets/vendor/
-          git commit -m "chore(vendor): استضافة ذاتية لـ Tailwind 3.4.17 + إشعارات الطرف الثالث (مع سجل التشخيص)" || echo "لا تغييرات"
+          git add cdn-fa-report.txt
+          git commit -m "chore(ci): تقرير Font Awesome المؤقت" || echo "لا تغييرات"
           git push origin HEAD:arena/01a0fd0d-kinanmjeed88-github-io || echo "فشل الدفع"
