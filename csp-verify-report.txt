@@ -1,0 +1,69 @@
+=== انتظار النشر ===
+محاولة 1: HTTP=200 | CSP=موجود
+
+=== الترويسات التي يرسلها Cloudflare فعلياً ===
+HTTP/2 200 
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+content-security-policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://partner.googleadservices.com https://*.google.com https://*.gstatic.com https://*.adtrafficquality.google https://cdn.onesignal.com https://unpkg.com https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; connect-src 'self' https://api.github.com https://www.googletagmanager.com https://*.google-analytics.com https://analytics.google.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.gstatic.com https://*.adtrafficquality.google https://cdn.onesignal.com https://api.onesignal.com https://*.onesignal.com https://unpkg.com https://esm.sh; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://*.googlesyndication.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://*.google.com https://*.onesignal.com; worker-src 'self' blob:; media-src 'self' https:; manifest-src 'self'
+permissions-policy: geolocation=(), camera=(), microphone=(), payment=()
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+x-frame-options: DENY
+
+=== مطابقة CSP المنشورة مع الملف المحلي ===
+✅ مطابقة تامة
+
+=== تحقق متصفح Chrome (CSP) ===
+المجموع الكلي لانتهاكات CSP: 4
+
+### الصفحة الرئيسية — /
+   ترويسة CSP على المستند : موجودة ✅
+   HSTS / nosniff / XFO   : ✅ / ✅ / ✅
+   انتهاكات CSP           : 1 ❌
+      ← [frame-src] https://ep2.adtrafficquality.google
+   رسائل Console أمنية    : 1 ❌
+      ← Framing 'https://ep2.adtrafficquality.google/' violates the following Content Security Policy directive: "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://*.googlesynd
+   موارد فشل تحميلها       : 2
+      ← net::ERR_ABORTED https://analytics.google.com/g/collect?v=2&tid=G-NZVS1EN9RG&gtm=45je69u2v9241594962za200zd9241594962xf1&_p=1790959511352
+      ← net::ERR_ABORTED https://analytics.google.com/g/collect?v=2&tid=G-NZVS1EN9RG&gtm=45je69u2v9241594962za200zd9241594962xf1&_p=1790959511352
+
+### مقال (يوتيوب + Font Awesome + تعقيم) — /article-nasa-earth-space.html
+   ترويسة CSP على المستند : موجودة ✅
+   HSTS / nosniff / XFO   : ✅ / ✅ / ✅
+   انتهاكات CSP           : 1 ❌
+      ← [frame-src] https://ep2.adtrafficquality.google
+   رسائل Console أمنية    : 1 ❌
+      ← Framing 'https://ep2.adtrafficquality.google/' violates the following Content Security Policy directive: "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://*.googlesynd
+   موارد فشل تحميلها       : 3
+      ← net::ERR_ABORTED https://pagead2.googlesyndication.com/pagead/ping?e=1
+      ← net::ERR_ABORTED https://pagead2.googlesyndication.com/pagead/ping?e=1
+      ← net::ERR_ABORTED https://analytics.google.com/g/collect?v=2&tid=G-NZVS1EN9RG&gtm=45je69u2v9241594962za200zd9241594962xf1&_p=1790959518983
+
+### صفحة أدوات — /tools.html
+   ترويسة CSP على المستند : موجودة ✅
+   HSTS / nosniff / XFO   : ✅ / ✅ / ✅
+   انتهاكات CSP           : 1 ❌
+      ← [frame-src] https://ep2.adtrafficquality.google
+   رسائل Console أمنية    : 1 ❌
+      ← Framing 'https://ep2.adtrafficquality.google/' violates the following Content Security Policy directive: "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://*.googlesynd
+   موارد فشل تحميلها       : 2
+      ← net::ERR_ABORTED https://analytics.google.com/g/collect?v=2&tid=G-NZVS1EN9RG&gtm=45je69u2v9241594962za200zd9241594962xf1&_p=1790959525237
+      ← net::ERR_ABORTED https://analytics.google.com/g/collect?v=2&tid=G-NZVS1EN9RG&gtm=45je69u2v9241594962za200zd9241594962xf1&_p=1790959525237
+
+### أداة AI (importmap من esm.sh) — /tool-analysis.html
+   ترويسة CSP على المستند : موجودة ✅
+   HSTS / nosniff / XFO   : ✅ / ✅ / ✅
+   انتهاكات CSP           : 1 ❌
+      ← [frame-src] https://ep2.adtrafficquality.google
+   رسائل Console أمنية    : 1 ❌
+      ← Framing 'https://ep2.adtrafficquality.google/' violates the following Content Security Policy directive: "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://*.googlesynd
+   موارد فشل تحميلها       : 2
+      ← net::ERR_ABORTED https://esm.sh/@google/genai@0.1.1
+      ← net::ERR_ABORTED https://analytics.google.com/g/collect?v=2&tid=G-NZVS1EN9RG&gtm=45je69u2v9241594962za208zd9241594962xf1&_p=1790959532095
+
+### لوحة التحكم CMS — /admin/
+   ترويسة CSP على المستند : موجودة ✅
+   HSTS / nosniff / XFO   : ✅ / ✅ / ✅
+   انتهاكات CSP           : صفر ✅
+   رسائل Console أمنية    : لا شيء ✅
+   موارد فشل تحميلها       : لا شيء ✅
