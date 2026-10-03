@@ -9,7 +9,7 @@
   <link>https://kinantouch.com</link>
   <description>المصدر العربي الأول للمقالات التقنية، مراجعات الهواتف، والتطبيقات.</description>
   <language>ar</language>
-  <lastBuildDate>Fri, 02 Oct 2026 09:42:01 GMT</lastBuildDate>
+  <lastBuildDate>Sat, 03 Oct 2026 05:30:02 GMT</lastBuildDate>
   <ttl>60</ttl>
   <atom:link href="https://kinantouch.com/feed.xml" rel="self" type="application/rss+xml" />
 
@@ -2838,10 +2838,10 @@
     <dc:creator><![CDATA[كنان الصائغ]]></dc:creator>
     <category>apps</category>
     <description><![CDATA[تمتع بمشاهدة القنوات العربية والأجنبية، وأحدث الأفلام والمسلسلات للهواتف وشاشات التلفاز الذكية."]]></description>
-    <content:encoded><![CDATA[<script>!function(){if(document.querySelector('script[src*="cdn.tailwindcss"]'))return;var t=document.createElement('script');t.src='https://cdn.tailwindcss.com';t.onload=function(){if(window.tailwind)tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Tajawal','sans-serif']}}}};};document.head.appendChild(t);}();</script>
+    <content:encoded><![CDATA[<script>!function(){if(document.querySelector('script[src*="assets/vendor/tailwind"]'))return;var t=document.createElement('script');t.src='/assets/vendor/tailwind-3.4.17.min.js';t.integrity='sha384-igm5BeiBt36UU4gqwWS7imYmelpTsZlQ45FZf+XBn9MuJbn4nQr7yx1yFydocC/K';t.onload=function(){if(window.tailwind)tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Tajawal','sans-serif']}}}};};document.head.appendChild(t);}();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
 
 <div dir="rtl">
 
@@ -3000,7 +3000,7 @@
     <dc:creator><![CDATA[كنان الصائغ]]></dc:creator>
     <category>APP_Ai</category>
     <description><![CDATA[التطبيق الهندسي الأول لتصميم منظومات الطاقة الشمسية. احسب عدد الألواح، سعة البطاريات، وأحجام القواطع بدقة معايير NEC العالمية مع استخراج تقارير PDF فنية.]]></description>
-    <content:encoded><![CDATA[<script>!function(){if(document.querySelector('script[src*="cdn.tailwindcss"]'))return;var t=document.createElement('script');t.src='https://cdn.tailwindcss.com';t.onload=function(){if(window.tailwind)tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Tajawal','sans-serif']}}}};};document.head.appendChild(t);}();</script>
+    <content:encoded><![CDATA[<script>!function(){if(document.querySelector('script[src*="assets/vendor/tailwind"]'))return;var t=document.createElement('script');t.src='/assets/vendor/tailwind-3.4.17.min.js';t.integrity='sha384-igm5BeiBt36UU4gqwWS7imYmelpTsZlQ45FZf+XBn9MuJbn4nQr7yx1yFydocC/K';t.onload=function(){if(window.tailwind)tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Tajawal','sans-serif']}}}};};document.head.appendChild(t);}();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
 
@@ -3112,10 +3112,10 @@
     <dc:creator><![CDATA[كنان الصائغ]]></dc:creator>
     <category>APP_Ai</category>
     <description><![CDATA[حمل تطبيق الذاكرين، مكتبتك الإسلامية الشاملة التي تضم أكثر من 38 ألف نص ديني من القرآن الكريم والأدعية. تطبيق سريع، خالي تماماً من الإعلانات، ويدعم التحديث الهوائي!]]></description>
-    <content:encoded><![CDATA[<script>!function(){if(document.querySelector('script[src*="cdn.tailwindcss"]'))return;var t=document.createElement('script');t.src='https://cdn.tailwindcss.com';t.onload=function(){if(window.tailwind)tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Tajawal','sans-serif']}}}};};document.head.appendChild(t);}();</script>
+    <content:encoded><![CDATA[<script>!function(){if(document.querySelector('script[src*="assets/vendor/tailwind"]'))return;var t=document.createElement('script');t.src='/assets/vendor/tailwind-3.4.17.min.js';t.integrity='sha384-igm5BeiBt36UU4gqwWS7imYmelpTsZlQ45FZf+XBn9MuJbn4nQr7yx1yFydocC/K';t.onload=function(){if(window.tailwind)tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Tajawal','sans-serif']}}}};};document.head.appendChild(t);}();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
 
 <div dir="rtl">
 
@@ -3592,10 +3592,10 @@ function copyToClipboard(text, message) {
     <dc:creator><![CDATA[كنان الصائغ]]></dc:creator>
     <category>AI</category>
     <description><![CDATA[الجيل الجديد من الذكاء الاصطناعي بقدرات مذهلة! اختر بين DeepSeek-V4 Pro للأداء الفائق و 100K سياق رمزي، أو DeepSeek-V4 Flash للسرعة الخارقة (أسرع 30 مرة). مع ميزات اخرى.]]></description>
-    <content:encoded><![CDATA[<script>!function(){if(document.querySelector('script[src*="cdn.tailwindcss"]'))return;var t=document.createElement('script');t.src='https://cdn.tailwindcss.com';t.onload=function(){if(window.tailwind)tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Tajawal','sans-serif']}}}};};document.head.appendChild(t);}();</script>
+    <content:encoded><![CDATA[<script>!function(){if(document.querySelector('script[src*="assets/vendor/tailwind"]'))return;var t=document.createElement('script');t.src='/assets/vendor/tailwind-3.4.17.min.js';t.integrity='sha384-igm5BeiBt36UU4gqwWS7imYmelpTsZlQ45FZf+XBn9MuJbn4nQr7yx1yFydocC/K';t.onload=function(){if(window.tailwind)tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Tajawal','sans-serif']}}}};};document.head.appendChild(t);}();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
 
 <style> html { scroll-behavior: smooth; } </style>
 
@@ -4077,10 +4077,10 @@ function copyToClipboard(text, message) {
     <dc:creator><![CDATA[كنان الصائغ]]></dc:creator>
     <category>apps</category>
     <description><![CDATA[]]></description>
-    <content:encoded><![CDATA[<script>!function(){if(document.querySelector('script[src*="cdn.tailwindcss"]'))return;var t=document.createElement('script');t.src='https://cdn.tailwindcss.com';t.onload=function(){if(window.tailwind)tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Tajawal','sans-serif']}}}};};document.head.appendChild(t);}();</script>
+    <content:encoded><![CDATA[<script>!function(){if(document.querySelector('script[src*="assets/vendor/tailwind"]'))return;var t=document.createElement('script');t.src='/assets/vendor/tailwind-3.4.17.min.js';t.integrity='sha384-igm5BeiBt36UU4gqwWS7imYmelpTsZlQ45FZf+XBn9MuJbn4nQr7yx1yFydocC/K';t.onload=function(){if(window.tailwind)tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Tajawal','sans-serif']}}}};};document.head.appendChild(t);}();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
 
 <div dir="rtl">
 
@@ -4179,10 +4179,10 @@ function copyToClipboard(text, message) {
     <dc:creator><![CDATA[كنان الصائغ]]></dc:creator>
     <category>articles</category>
     <description><![CDATA[​"اكتشف كيف تبدو التغيرات المناخية من الفضاء عبر الأقمار الصناعية. تعرف على تأثير ذوبان الجليد، إزالة الغابات، وتوسع المدن على مستقبل الأرض ببيانات رسمية."]]></description>
-    <content:encoded><![CDATA[<script>!function(){if(document.querySelector('script[src*="cdn.tailwindcss"]'))return;var t=document.createElement('script');t.src='https://cdn.tailwindcss.com';t.onload=function(){if(window.tailwind)tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Tajawal','sans-serif']}}}};};document.head.appendChild(t);}();</script>
+    <content:encoded><![CDATA[<script>!function(){if(document.querySelector('script[src*="assets/vendor/tailwind"]'))return;var t=document.createElement('script');t.src='/assets/vendor/tailwind-3.4.17.min.js';t.integrity='sha384-igm5BeiBt36UU4gqwWS7imYmelpTsZlQ45FZf+XBn9MuJbn4nQr7yx1yFydocC/K';t.onload=function(){if(window.tailwind)tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Tajawal','sans-serif']}}}};};document.head.appendChild(t);}();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
 
 <style> html { scroll-behavior: smooth; } </style>
 
