@@ -33,4 +33,34 @@ TechTouch هو موقع تقني شامل مبني بتقنيات حديثة (HT
 - **تحسينات محركات البحث (SEO):** إضافة أوصاف دقيقة (`meta description`) لكل قسم، وتصحيح العناوين (`H1`) لتسهيل أرشفة جوجل.
 
 ---
+
+## 🌐 النشر والاستضافة (Deployment)
+
+الموقع موقع ثابت (Static) بلا خطوة بناء، ويُنشر من الفرع `main` مباشرةً على منصّتين:
+
+| المنصة | النطاق | الدور | ملفات خاصة بها |
+| --- | --- | --- | --- |
+| **Cloudflare Pages** | `kinantouch.com` | النشر الأساسي (الإنتاج) | `_headers` (ترويسات الأمان/CSP) + `functions/api/*` |
+| **GitHub Pages** | `kinanmjeed88.github.io` | نسخة مرآة (احتياطية) | — |
+
+### إعداد GitHub Pages الصحيح
+- **Build and deployment → Source:** `Deploy from a branch`
+- **Branch:** `main` و **Folder:** `/ (root)`
+
+> ⚠️ **درس مستفاد من عطل فعلي (2026-10-02):** عندما يكون المجلد المحدد `/docs` (وهو غير موجود في المستودع) تتوقف مهمة
+> `pages build and deployment` في خطوة Jekyll بالخطأ:
+> `No such file or directory @ dir_chdir0 - /github/workspace/docs`
+> فتتوقف المرآة عن التحديث (تبقى على آخر بناء ناجح) وتظهر علامة فشل حمراء في كل دفعة.
+> **الإصلاح:** `Settings → Pages → Source: Deploy from a branch → main → / (root) → Save` ثم إعادة تشغيل البناء.
+
+### لماذا لا نستخدم GitHub Actions للنشر؟
+لأن الموقع ثابت بلا خطوة بناء، فإن أبسط وأقل السبل عرضةً للأعطال هو النشر من الجذر. عند الحاجة لاحقاً إلى
+تصفية الملفات المنشورة أو خطوة بناء، يمكن تحويل `Source` إلى `GitHub Actions` وإضافة ملف
+`.github/workflows/pages.yml` يستخدم `actions/upload-pages-artifact` ثم `actions/deploy-pages`.
+
+### ملاحظة SEO
+جميع الصفحات تحمل `<link rel="canonical" href="https://kinantouch.com/...">`، لذلك لا يحدث تضارب
+محتوى مكرر بين النطاق الرسمي ونسخة المرآة على GitHub Pages.
+
+---
 > **ملاحظة للمطورين:** المشروع يستخدم بنية Static-site generation محلية، تأكد دائماً من وجود `GitHub Token` فعال ضمن إعدادات الـ CMS أو المتصفح لتتمكن من القراءة والكتابة بسلاسة.
