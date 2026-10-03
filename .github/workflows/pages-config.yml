@@ -16,6 +16,13 @@
 name: Fix GitHub Pages Source (يدوي)
 
 on:
+  # ملاحظة: workflow_dispatch لا يعمل إلا إذا كان الملف موجوداً على الفرع الافتراضي،
+  # لذلك يُشغَّل هذا الملف المؤقت عند الدفع إلى فرع المراجعة المحدد فقط.
+  push:
+    branches:
+      - 'arena/01a10259-kinanmjeed88-github-io'
+    paths:
+      - '.github/workflows/pages-config.yml'
   workflow_dispatch:
 
 permissions:
