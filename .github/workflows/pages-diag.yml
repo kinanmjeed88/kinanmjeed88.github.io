@@ -1,9 +1,8 @@
 # ============================================================
 #  مهمة تشخيصية مؤقتة (تُحذف بعد التشخيص)
-#  الهدف: إعادة إنتاج بناء GitHub Pages (خط Jekyll القديم) بجذر المستودع
-#  لنعرف بالضبط هل ينجح البناء عند ضبط المصدر على "/" بدلاً من "/docs".
-#  المخرجات تُكتب كتعليقات (annotations) على تشغيل المهمة لأن سجلات
-#  Actions غير قابلة للتحميل من بيئة العمل الحالية.
+#  الهدف: معرفة هل يتجاوز بناء GitHub Pages (صورة jekyll-build-pages)
+#  معالجة Jekyll عند وجود ملف .nojekyll، أي هل تُنشر الملفات كما هي
+#  (نسخة مطابقة لاستضافة Cloudflare Pages) بدل تحويلها عبر Jekyll.
 # ============================================================
 name: Pages Build Diag (مؤقت)
 
@@ -23,10 +22,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Reproduce legacy GitHub Pages build with source="/"
+      - name: Test .nojekyll pass-through (source="/")
         id: build
         run: |
           set +e
+          touch .nojekyll
           docker run --rm \
             -e GITHUB_WORKSPACE=/github/workspace \
             -e GITHUB_REPOSITORY="${GITHUB_REPOSITORY}" \
@@ -37,15 +37,17 @@ jobs:
             -e INPUT_VERBOSE=true \
             -v "${PWD}:/github/workspace" \
             ghcr.io/actions/jekyll-build-pages:v1.0.13 > /tmp/jekyll.log 2>&1
-          echo "exit_code=$?" >> /tmp/result.txt
-          echo "--- files produced ---" >> /tmp/result.txt
-          echo "count=$(find ./_diag_site -type f 2>/dev/null | wc -l)" >> /tmp/result.txt
-          ls ./_diag_site 2>/dev/null | head -30 >> /tmp/result.txt
-          echo "--- conflict/warning lines ---" >> /tmp/result.txt
-          grep -iE "conflict|warn|error|deprecat" /tmp/jekyll.log | head -40 >> /tmp/result.txt
-          echo "--- tail of build log ---" >> /tmp/result.txt
-          tail -c 3000 /tmp/jekyll.log >> /tmp/result.txt
-          cat /tmp/result.txt
+          echo "exit_code=$?" > /tmp/result.txt
+          echo "--- jekyll ran? ---" >> /tmp/result.txt
+          grep -cE "Generating|Rendering" /tmp/jekyll.log >> /tmp/result.txt
+          echo "--- _headers published? ---" >> /tmp/result.txt
+          echo "headers_file=$(test -f ./_diag_site/_headers && echo YES || echo NO)" >> /tmp/result.txt
+          echo "--- README kept as .md ? ---" >> /tmp/result.txt
+          echo "readme_md=$(test -f ./_diag_site/README.md && echo YES || echo NO) readme_html=$(test -f ./_diag_site/README.html && echo YES || echo NO)" >> /tmp/result.txt
+          echo "--- theme css written? ---" >> /tmp/result.txt
+          echo "theme_css=$(test -f ./_diag_site/assets/css/style.css && echo YES || echo NO)" >> /tmp/result.txt
+          echo "--- head of log ---" >> /tmp/result.txt
+          head -c 2500 /tmp/jekyll.log >> /tmp/result.txt
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
@@ -62,6 +64,5 @@ jobs:
           for i in range(0, len(data), chunk):
               part = data[i:i + chunk]
               esc = part.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
-              level = 'error' if i == 0 else 'notice'
-              print(f'::{level} title=diag-part-{i // chunk}::{esc}')
+              print(f'::notice title=diag-part-{i // chunk}::{esc}')
           PY
