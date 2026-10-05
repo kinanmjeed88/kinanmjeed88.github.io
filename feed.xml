@@ -9,10 +9,125 @@
   <link>https://kinantouch.com</link>
   <description>المصدر العربي الأول للمقالات التقنية، مراجعات الهواتف، والتطبيقات.</description>
   <language>ar</language>
-  <lastBuildDate>Sun, 04 Oct 2026 06:04:58 GMT</lastBuildDate>
+  <lastBuildDate>Mon, 05 Oct 2026 05:57:37 GMT</lastBuildDate>
   <ttl>60</ttl>
   <atom:link href="https://kinantouch.com/feed.xml" rel="self" type="application/rss+xml" />
 
+  <item>
+    <title><![CDATA[جدول الدروس المدرسي: إنشاء وتوليد جداول الحصص تلقائياً بدون تعارض]]></title>
+    <link>https://kinantouch.com/article-jdwl-aldrws-almdrsy</link>
+    <guid isPermaLink="true">https://kinantouch.com/article-jdwl-aldrws-almdrsy</guid>
+    <pubDate>Sun, 04 Oct 2026 15:45:00 GMT</pubDate>
+    <dc:creator><![CDATA[كنان الصائغ]]></dc:creator>
+    <category>apps</category>
+    <description><![CDATA[لتوليد الجداول المدرسية للمراحل (الابتدائية، المتوسطة، والإعدادية). أداة ذكية لحل تعارضات المعلمين، وتوزيع الحصص بضغطة زر، مع إمكانية التصدير المباشر لملفات Excel و PDF.]]></description>
+    <content:encoded><![CDATA[<div dir="rtl">
+
+<!-- 1. الهيدر -->
+<header>
+    <div>
+        <span>تحديث جديد</span>
+        <span>أندرويد وويندوز</span>
+        <span>بدون إنترنت وبدون إعلانات</span>
+    </div>
+    <h1>تطبيق جدول الدروس الأسبوعي</h1>
+    <p>أدخل بيانات مدرستك مرة واحدة، واترك التطبيق يوزّع الحصص ويكشف التعارضات ويخرج لك جدولًا جاهزًا للطباعة والمشاركة. مناسب للمراحل الابتدائية والمتوسطة والإعدادية.</p>
+</header>
+
+<!-- 2. ما الجديد -->
+<section>
+    <h2>ما الجديد في هذا الإصدار؟</h2>
+    <ul>
+        <li><strong>إعداد أولي عند أول تشغيل</strong>اسم المدرسة والمدير وعدد الدروس وأيام الدوام والمرحلة وطريقة الحصص، ويمكن مراجعتها لاحقًا من الإعدادات.</li>
+        <li><strong>سياسة المرحلة الابتدائية</strong>المواد التي نصابها ٦ حصص فأكثر (كالعربي والرياضيات) تسمح تلقائيًا بحصتين في اليوم على الأقل.</li>
+        <li><strong>قيود تلقائية قابلة للتعديل</strong>تظهر بشارة «تلقائي»، وتصبح يدوية بمجرد تعديلها، ولا تعود إذا حذفتها.</li>
+        <li><strong>خطة أسبوعية مرنة</strong>اختر «٣٠ حصة لجميع الصفوف» أو الخطة الدراسية الرسمية، مع تعديل نصاب كل صف.</li>
+        <li><strong>تخصيص لكل صف</strong>عدد حصص مختلف وتوزيع أيام يدوي، مع معاينة يومية قبل الحفظ.</li>
+        <li><strong>إسناد سريع عند إضافة معلم</strong>اختر المواد والصفوف في الشاشة نفسها دون التنقل بين التبويبات.</li>
+        <li><strong>نسخة احتياطية أشمل</strong>تتضمن بيانات المدرسة والقيود وتثبيت الحصص، وتبقى متوافقة مع النسخ القديمة.</li>
+        <li><strong>أسماء الأيام وأيام التفرغ</strong>تعمل بشكل صحيح مع دوام يصل إلى ٦ أو ٧ أيام، وتتبع أيام الدوام المحددة فعلًا.</li>
+        <li><strong>البقاء في مكانك</strong>بعد حفظ مادة أو صف أو معلم لا يعيدك التطبيق إلى تبويب الجدول.</li>
+        <li><strong>ترقية آمنة</strong>من لديه بيانات سابقة لا يُقاطع بالإعداد الأولي ولا تتغير جداوله تلقائيًا.</li>
+    </ul>
+</section>
+
+<!-- 3. المميزات -->
+<section>
+    <h2>ماذا يفعل التطبيق لك؟</h2>
+    <div>
+        <div><h3><span aria-hidden="true">🧩</span> توليد تلقائي</h3>يفحص بياناتك أولًا، ثم يوزّع الحصص دون أن يجتمع معلم في مكانين أو صف في حصتين.</div>
+        <div><h3><span aria-hidden="true">🛟</span> حل القيود تلقائيًا</h3>إذا تعذّر إكمال الجدول يجرّب حتى ثلاث محاولات، ثم يعرض الأسباب المتبقية لتعالجها.</div>
+        <div><h3><span aria-hidden="true">🖐️</span> تعديل يدوي</h3>انقل الحصة أو بدّلها بالسحب والإفلات بعد الضغط المطوّل، وثبّتها بالضغط المزدوج فلا يحرّكها التوليد.</div>
+        <div><h3><span aria-hidden="true">🔴</span> تعارضات واضحة</h3>تظهر الحصص المتعارضة بالأحمر مع سبب كل تعارض وما يجب تعديله.</div>
+        <div><h3><span aria-hidden="true">👨‍🏫</span> قيود المعلمين</h3>أيام تفرغ، وحصص مسموحة، وحد يومي وأسبوعي لكل معلم.</div>
+        <div><h3><span aria-hidden="true">📚</span> قيود المواد</h3>حد يومي لكل مادة، وتفضيل الدروس المبكرة، وتتابع الحصص (متتالي أو غير متتالي).</div>
+        <div><h3><span aria-hidden="true">🖨️</span> تصدير وطباعة</h3>ملف قابل للتحرير، وملف طباعة (A4 أو A3 أو مقاس مخصص)، وجدول مستقل لكل معلم، وصورة للمشاركة.</div>
+        <div><h3><span aria-hidden="true">💾</span> نسخ احتياطي</h3>كل بيانات المدرسة في ملف واحد تستعيده أو تنقله إلى جهاز آخر. احفظه في مكان آمن لأنه يحوي بيانات المعلمين.</div>
+    </div>
+</section>
+
+<!-- 4. طريقة الاستخدام -->
+<section>
+    <h2>طريقة الاستخدام خطوة بخطوة</h2>
+    <ol>
+        <li><span aria-hidden="true">١</span><div><strong>أكمل الإعداد الأولي.</strong> اكتب اسم المدرسة والمدير، وحدّد عدد الدروس في اليوم وأيام الدوام والمرحلة وطريقة الحصص الأسبوعية.</div></li>
+        <li><span aria-hidden="true">٢</span><div><strong>أضف المواد.</strong> أدخل اسم كل مادة وعدد حصصها الأسبوعية، وفعّل تفضيل الدروس المبكرة أو سياسة التتابع إن احتجت.</div></li>
+        <li><span aria-hidden="true">٣</span><div><strong>أضف الصفوف والشعب.</strong> وخصّص لأي صف عدد حصص مختلفًا إن لزم.</div></li>
+        <li><span aria-hidden="true">٤</span><div><strong>أضف المعلمين.</strong> الاسم والاختصاص والحد اليومي والأسبوعي وأيام التفرغ، ويمكنك إسناد المواد والصفوف له مباشرة.</div></li>
+        <li><span aria-hidden="true">٥</span><div><strong>أكمل الإسناد.</strong> اربط كل مادة بصف ومعلم حتى تكتمل حصص كل صف، وتابع مؤشر الحصص المتبقية للمعلم.</div></li>
+        <li><span aria-hidden="true">٦</span><div><strong>اضبط قيود المواد.</strong> ارفع الحد اليومي للمادة التي تحتاج حصتين فأكثر في اليوم الواحد.</div></li>
+        <li><span aria-hidden="true">٧</span><div><strong>ولّد الجدول.</strong> افتح تبويب «الجدول» واضغط «توليد الجدول»، وإذا تعذّر إكماله اضغط «حل القيود تلقائيًا».</div></li>
+        <li><span aria-hidden="true">٨</span><div><strong>راجع وصدّر.</strong> عدّل ما يلزم، ثم صدّر الجدول وخذ نسخة احتياطية.</div></li>
+    </ol>
+</section>
+
+<!-- 5. أخطاء شائعة -->
+<section>
+    <h2>قبل أن تضغط «توليد الجدول»</h2>
+    <p>هذه النقاط تمنع أغلب المشاكل، فراجعها أولًا:</p>
+    <ul>
+        <li><span aria-hidden="true">✔</span><span>مجموع حصص المواد المُسندة لكل صف يساوي حصصه الأسبوعية <strong>بالضبط</strong>؛ حصة ناقصة تظهر رسالة «نقص في بيانات الإسناد»، وحصة زائدة تظهر «استحالة رياضية».</span></li>
+        <li><span aria-hidden="true">✔</span><span>«عدد الدروس في اليوم» ليس عدد حصص الصف: ٣٠ حصة على ٥ أيام تعني ٦ دروس يوميًا، ولتحصل على ٧ دروس يوميًا خصّص الصف بـ٣٥ حصة.</span></li>
+        <li><span aria-hidden="true">✔</span><span>الحد اليومي للمادة × عدد أيام الأسبوع لا يقل عن نصابها؛ فمادة بـ٨ حصص على ٥ أيام تحتاج حدًا يوميًا ٢ على الأقل.</span></li>
+        <li><span aria-hidden="true">✔</span><span>مجموع حصص المعلم لا يتجاوز حدّه الأسبوعي، ويُحسب على أيام دوامه دون أيام تفرغه.</span></li>
+        <li><span aria-hidden="true">✔</span><span>اكتب اسم الصف أو المرحلة بالصيغة نفسها في كل الشعب (مثل «الصف الرابع» دائمًا).</span></li>
+        <li><span aria-hidden="true">✔</span><span>الحصة المثبّتة لا تتحرك أبدًا، فإذا خالفت قيدًا جديدًا فألغِ تثبيتها بالضغط المزدوج ثم أعد التوليد.</span></li>
+    </ul>
+</section>
+
+<!-- 6. التحميل -->
+<section>
+    <h2>حمّل التطبيق الآن</h2>
+    <p>النسخة الأساسية للأندرويد، وتتوفر نسخ مهيأة لويندوز ٧ و١٠ و١١. التحميل مباشر وآمن.</p>
+    <div>
+        <a href="https://t.me/techtouch7/5757?single" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">📱</span> تحميل للأندرويد</a>
+        <a href="https://t.me/techtouch7/5758?single" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">💻</span> تحميل للويندوز</a>
+    </div>
+</section>
+
+<!-- 7. جميع التطبيقات المدرسية -->
+<section>
+    <h2>جميع التطبيقات المدرسية</h2>
+    <ul>
+        <li><a href="https://t.me/techtouch7/5757?single" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">✦</span> جدول الدروس (أندرويد-ويندوز)</a></li>
+        <li><a href="https://t.me/techtouch7/5759?single" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">✦</span> سجل الطالب (أندرويد-ويندوز)</a></li>
+        <li><a href="https://t.me/techtouch7/5841" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">✦</span> حضور الطالب بالباركود</a></li>
+        <li><a href="https://t.me/techtouch7/5775" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">✦</span> مدار للمخاطبات للمدارس</a></li>
+        <li><a href="https://t.me/techtouch7/5814?single" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">✦</span> حضور الكادر (أندرويد-ويندوز)</a></li>
+    </ul>
+</section>
+
+<!-- 8. الخاتمة -->
+<footer>
+    <p>رأيكم يهمنا لتطوير التطبيق 💡</p>
+    <p>شاركونا ملاحظاتكم واقتراحاتكم لميزات جديدة، فهي أساس التحديثات القادمة. تطوير وبرمجة شخصية.</p>
+</footer>
+
+</div>
+]]></content:encoded>
+    <media:content url="https://kinantouch.com/assets/images/1787488624742_file_00000000774c81f48e967e026feec8bc.webp" type="image/webp" medium="image" />
+    <enclosure url="https://kinantouch.com/assets/images/1787488624742_file_00000000774c81f48e967e026feec8bc.webp" type="image/webp" />
+  </item>
   <item>
     <title><![CDATA[حسابات أكستريم:  (Xtream IPTV) مجانية ومحدثة]]></title>
     <link>https://kinantouch.com/article-extreme-accounts-iptv</link>
@@ -2068,311 +2183,6 @@
 </div>]]></content:encoded>
     <media:content url="https://kinantouch.com/assets/images/1789846942774_file_00000000dfa0820a9c45846b41de063a.webp" type="image/webp" medium="image" />
     <enclosure url="https://kinantouch.com/assets/images/1789846942774_file_00000000dfa0820a9c45846b41de063a.webp" type="image/webp" />
-  </item>
-  <item>
-    <title><![CDATA[جدول الدروس المدرسي: إنشاء وتوليد جداول الحصص تلقائياً بدون تعارض]]></title>
-    <link>https://kinantouch.com/article-jdwl-aldrws-almdrsy</link>
-    <guid isPermaLink="true">https://kinantouch.com/article-jdwl-aldrws-almdrsy</guid>
-    <pubDate>Sun, 23 Aug 2026 12:35:00 GMT</pubDate>
-    <dc:creator><![CDATA[كنان الصائغ]]></dc:creator>
-    <category>apps</category>
-    <description><![CDATA[لتوليد الجداول المدرسية للمراحل (الابتدائية، المتوسطة، والإعدادية). أداة ذكية لحل تعارضات المعلمين، وتوزيع الحصص بضغطة زر، مع إمكانية التصدير المباشر لملفات Excel و PDF.]]></description>
-    <content:encoded><![CDATA[<div dir="rtl">
-    
-    <!-- =====================================
-         1. HEADER (Hero Section)
-    ====================================== -->
-    <div>
-        <!-- Decorative Background Elements -->
-        <div aria-hidden="true"></div>
-        <div aria-hidden="true"></div>
-
-        <div>
-            <!-- Badges -->
-            <div>
-                <div>
-                    <span aria-hidden="true">🚀</span> تحديث جديد
-                </div>
-                <div>
-                    <span aria-hidden="true">🧬</span> نظام تعليمي متكامل
-                </div>
-                <div>
-                    <span aria-hidden="true">🚫</span> بدون إعلانات
-                </div>
-            </div>
-
-            <h1>
-                منظومة التعليم الذكية (جدول الدروس + سجل الطالب)
-            </h1>
-
-            <div>
-                ابتدائي • متوسط • إعدادي
-            </div>
-
-            <div>
-                نقدم لك الحل الشامل لإدارة المدارس بذكاء: أداة لتوليد الجداول المدرسية بضغطة زر، وسجل رقمي منظم لمتابعة الطلاب، وكلاهما أوفلاين بالكامل، كروس بلاتفورم، ومصمم لتلبية كافة القيود التعليمية.
-            </div>
-        </div>
-    </div>
-
-    <div>
-        
-        <!-- =====================================
-             2.WHAT'S NEW (Schedule Fixes)
-        ====================================== -->
-        <div>
-            <h3>
-                <span aria-hidden="true">🛠️</span> ما الجديد في تطبيق جدول الدروس؟
-            </h3>
-            <div>
-                تم إصلاح وتحسين مشكلة تصدير الجداول إلى ملفات <strong>Excel</strong>، لضمان استخراج البيانات بشكل سليم ومنسق وجاهز للطباعة مباشرة.
-            </div>
-        </div>
-
-        <!-- =====================================
-             3. PART 1: SCHEDULE FEATURES
-        ====================================== -->
-        <div>
-            <h2>
-                <span aria-hidden="true">⚙️</span>
-                أولاً: مُنشئ الجداول الذكي
-            </h2>
-            
-            <div>
-                <div>
-                    <div aria-hidden="true">⚡</div>
-                    <h3>خوارزمية التوليد ومعالجة التعارضات</h3>
-                    <div>
-                        <div>إضافة ميزة "الحل التلقائي" الذكية لترتيب الدروس المتبقية وفك الاختناقات.</div>
-                        <div>تشخيص دقيق للتعارضات (تعارض معلم، فصل، أو وقت) بدلاً من الرسائل العامة.</div>
-                        <div>تمييز الخلايا والمتغيرات المتعارضة بلون بارز للتدخل السريع.</div>
-                        <div>دعم التعليمات والقيود الخاصة بالمدارس الابتدائية.</div>
-                    </div>
-                </div>
-
-                <div>
-                    <div aria-hidden="true">📱</div>
-                    <h3>تحسينات واجهة المستخدم والمظهر</h3>
-                    <div>
-                        <div>تقليل الفراغات الزائدة داخل خلايا الجدول لاستغلال مساحة الشاشة بشكل أفضل (Compact Layout).</div>
-                        <div>عرض (اسم المادة) و (اسم المعلم) داخل الخلية بتنسيق أوضح وأكثر ترتيباً.</div>
-                    </div>
-                </div>
-
-                <div>
-                    <h3>
-                        <span aria-hidden="true">⭐</span> ميزات إضافية للمنشئ:
-                    </h3>
-                    <div>
-                        <div>✔️ إضافة وتشكيل الصفوف والشعب.</div>
-                        <div>✔️ إضافة المواد مع نصاب الحصص.</div>
-                        <div>✔️ ربط المعلمين بنصاب الحصص.</div>
-                        <div>✔️ تحديد أيام التفرغ (Off-days) لكل معلم.</div>
-                        <div>✔️ أولوية الدروس (بداية/وسط/نهاية).</div>
-                        <div>✔️ تصدير الجداول لملفات Excel و PDF وجاهزية للطباعة.</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- =====================================
-             4. PART 2: STUDENT RECORD FEATURES
-        ====================================== -->
-        <div>
-            <h2>
-                <span aria-hidden="true">🎓</span>
-                ثانياً: سجل الطالب الرقمي
-            </h2>
-            
-            <div>
-                <div>
-                    <div>
-                        <div aria-hidden="true">👨‍🎓</div>
-                        <div>
-                            <h3>إدارة ملفات الطلاب</h3>
-                            <div>إضافة الطلاب، البحث، وتصفية البيانات بسرعة. تنظيم الصفوف والشعب.</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <div>
-                        <div aria-hidden="true">📝</div>
-                        <div>
-                            <h3>الحضور والدرجات</h3>
-                            <div>تسجيل الحضور، الغياب، الأعذار، الدرجات، والتقييمات بشكل منظم.</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <div>
-                        <div aria-hidden="true">⭐</div>
-                        <div>
-                            <h3>السلوك والملاحظات</h3>
-                            <div>متابعة السلوك، النقاط، الإجراءات، وإضافة الملاحظات التربوية والأكاديمية.</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <div>
-                        <div aria-hidden="true">📤</div>
-                        <div>
-                            <h3>استيراد وتصدير</h3>
-                            <div>استيراد قوائم الطلاب من ملفات Excel، وتصدير التقارير (Excel، PDF، JSON).</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <div>
-                        <div aria-hidden="true">💾</div>
-                        <div>
-                            <h3>النسخ الاحتياطي والخصوصية</h3>
-                            <div>تخزين محلي، كروس بلاتفورم، إنشاء نسخ احتياطية واستعادته بسهولة.</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <div>
-                        <div aria-hidden="true">📋</div>
-                        <div>
-                            <h3>ملف شامل</h3>
-                            <div>يجمع كافة معلومات الطالب في مكان واحد.</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- =====================================
-             5. PLATFORM SECTION
-        ====================================== -->
-        <div>
-            <div>
-                🔄 Android & Windows
-            </div>
-
-            <h2>
-                نفس المنظومة على الهاتف والحاسوب
-            </h2>
-
-            <div>
-                <div>لا حاجة لتعلم واجهات مختلفة. كلا التطبيقين مصمم ليعمل بتناغم بين نظامي Android و Windows. المنظومة بكاملها مصممة لتلبية كافة القيود التعليمية لجميع المراحل الدراسية.</div>
-                <div><strong>البيانات قابلة للنقل المتبادل</strong> عبر نظام النسخ الاحتياطي والاستعادة الذكي، حتى تتمكن من البدء على الحاسوب، ثم نقل بياناتك للهاتف، أو العكس، دون إعادة إدخال الصفوف والطلاب من جديد.</div>
-            </div>
-
-            <div>
-                <div>
-                    <h3>
-                        <span aria-hidden="true">📱</span> نسخة الهاتف
-                    </h3>
-                    <div>
-                        مثالية للاستخدام داخل الصف. سجل الحضور، الدرجات، والملاحظات السريعة في أي وقت، وقم بإنشاء نسخة احتياطية بسهولة.
-                    </div>
-                </div>
-
-                <div>
-                    <h3>
-                        <span aria-hidden="true">💻</span> نسخة الحاسوب
-                    </h3>
-                    <div>
-                        توفر مساحة عرض أكبر لإدارة البيانات الشاملة، استخراج التقارير، واستيراد القوائم من ملفات Excel براحة تامة.
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- =====================================
-             6. PRIVACY & TECH SECTION
-        ====================================== -->
-        <div>
-            <div>
-                <h2>
-                    <span aria-hidden="true">🔒</span> الخصوصية أولًا
-                </h2>
-                <div>
-                    كلا التطبيقين يحفظان البيانات محليًا على الجهاز باستخدام قواعد بيانات Isar فائقة السرعة، دون الحاجة إلى إنترنت أو خوادم خارجية.
-                </div>
-                <div>
-                    <span>تخزين محلي</span>
-                    <span>أوفلاين بالكامل</span>
-                </div>
-            </div>
-
-            <div>
-                <h2>
-                    <span aria-hidden="true">🤖</span> مدعوم بالذكاء الاصطناعي
-                </h2>
-                <div>
-                    تم تطوير المنظومة بالاستعانة بأدوات الذكاء الاصطناعي الحديثة لضمان كتابة كود نظيف، آمن، وخالٍ من الأخطاء، مع تصميم يركز على تجربة المستخدم (UX).
-                </div>
-            </div>
-        </div>
-
-        <!-- =====================================
-             7. DOWNLOAD SECTION (CTA)
-        ====================================== -->
-        <div>
-            <div>
-                <div>
-                    <h2>ابدأ بتنظيم منظومتك الآن</h2>
-                    <div>
-                        اختر النسخة المناسبة لنظام التشغيل الخاص بك. التطبيق متاح للتحميل المباشر والآمن.
-                    </div>
-                </div>
-
-                <div>
-                    <div>أولاً: جدول الدروس الذكي (جديد)</div>
-                    <div>
-                        <a href="https://t.me/techtouch7/5757?single" target="_blank" rel="noopener noreferrer" 
-                          >
-                            <span aria-hidden="true">📱</span> للأندرويد
-                        </a>
-                        
-                        <a href="https://t.me/techtouch7/5758?single" target="_blank" rel="noopener noreferrer" 
-                          >
-                            <span aria-hidden="true">💻</span> للويندوز
-                        </a>
-                    </div>
-                    <div>ثانياً: سجل الطالب الرقمي</div>
-                    <div>
-                        <a href="https://t.me/techtouch7/5759?single" target="_blank" rel="noopener noreferrer" 
-                          >
-                            <span aria-hidden="true">📱</span> للأندرويد
-                        </a>
-                        
-                        <a href="https://t.me/techtouch7/5760?single" target="_blank" rel="noopener noreferrer" 
-                          >
-                            <span aria-hidden="true">💻</span> للويندوز
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- =====================================
-         8. FOOTER
-    ====================================== -->
-    <div>
-        <h3>رأيكم يهمنا لتطوير التطبيق 💡</h3>
-        <div>
-            إذا كانت لديك أي ملاحظات، اقتراحات، أو أفكار لميزات جديدة، لا تتردد في مشاركتها. هذه المنظومة بنيت لتخدم المعلمين، وملاحظاتكم هي أساس التحديثات القادمة.
-        </div>
-        
-        <div>
-            <span>تطوير وبرمجة شخصية</span>
-            <span aria-hidden="true"></span>
-            <span>النظام التعليمي الشامل (جدول الدروس + سجل الطالب)</span>
-        </div>
-    </div>
-</div>]]></content:encoded>
-    <media:content url="https://kinantouch.com/assets/images/1787488624742_file_00000000774c81f48e967e026feec8bc.webp" type="image/webp" medium="image" />
-    <enclosure url="https://kinantouch.com/assets/images/1787488624742_file_00000000774c81f48e967e026feec8bc.webp" type="image/webp" />
   </item>
   <item>
     <title><![CDATA[سجل الطالب | تطبيق إدارة الطلاب والحضور والدرجات للمعلمين]]></title>

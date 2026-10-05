@@ -4,63 +4,72 @@
 
     <url>
         <loc>https://kinantouch.com</loc>
-        <lastmod>2026-10-04T06:04:58.472Z</lastmod>
+        <lastmod>2026-10-05T05:57:37.039Z</lastmod>
         <priority>1.0</priority>
     </url>
     <url>
         <loc>https://kinantouch.com/apps</loc>
-        <lastmod>2026-10-04T06:04:58.472Z</lastmod>
+        <lastmod>2026-10-05T05:57:37.039Z</lastmod>
         <priority>0.9</priority>
     </url>
     <url>
         <loc>https://kinantouch.com/games</loc>
-        <lastmod>2026-10-04T06:04:58.472Z</lastmod>
+        <lastmod>2026-10-05T05:57:37.039Z</lastmod>
         <priority>0.9</priority>
     </url>
     <url>
         <loc>https://kinantouch.com/sports</loc>
-        <lastmod>2026-10-04T06:04:58.472Z</lastmod>
+        <lastmod>2026-10-05T05:57:37.039Z</lastmod>
         <priority>0.9</priority>
     </url>
     <url>
         <loc>https://kinantouch.com/tools</loc>
-        <lastmod>2026-10-04T06:04:58.472Z</lastmod>
+        <lastmod>2026-10-05T05:57:37.039Z</lastmod>
         <priority>0.9</priority>
     </url>
     <url>
         <loc>https://kinantouch.com/about</loc>
-        <lastmod>2026-10-04T06:04:58.472Z</lastmod>
+        <lastmod>2026-10-05T05:57:37.039Z</lastmod>
         <priority>0.7</priority>
     </url>
     <url>
         <loc>https://kinantouch.com/tools-sites</loc>
-        <lastmod>2026-10-04T06:04:58.472Z</lastmod>
+        <lastmod>2026-10-05T05:57:37.039Z</lastmod>
         <priority>0.8</priority>
     </url>
     <url>
         <loc>https://kinantouch.com/tools-phones</loc>
-        <lastmod>2026-10-04T06:04:58.472Z</lastmod>
+        <lastmod>2026-10-05T05:57:37.039Z</lastmod>
         <priority>0.8</priority>
     </url>
     <url>
         <loc>https://kinantouch.com/tools-compare</loc>
-        <lastmod>2026-10-04T06:04:58.472Z</lastmod>
+        <lastmod>2026-10-05T05:57:37.039Z</lastmod>
         <priority>0.7</priority>
     </url>
     <url>
         <loc>https://kinantouch.com/tool-analysis</loc>
-        <lastmod>2026-10-04T06:04:58.472Z</lastmod>
+        <lastmod>2026-10-05T05:57:37.039Z</lastmod>
         <priority>0.7</priority>
     </url>
     <url>
         <loc>https://kinantouch.com/privacy</loc>
-        <lastmod>2026-10-04T06:04:58.472Z</lastmod>
+        <lastmod>2026-10-05T05:57:37.039Z</lastmod>
         <priority>0.3</priority>
     </url>
     <url>
         <loc>https://kinantouch.com/site-map</loc>
-        <lastmod>2026-10-04T06:04:58.472Z</lastmod>
+        <lastmod>2026-10-05T05:57:37.039Z</lastmod>
         <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://kinantouch.com/article-jdwl-aldrws-almdrsy</loc>
+        <lastmod>2026-10-04T15:45:00.000Z</lastmod>
+        <priority>0.8</priority>
+        <image:image>
+            <image:loc>https://kinantouch.com/assets/images/1787488624742_file_00000000774c81f48e967e026feec8bc.webp</image:loc>
+            <image:title>جدول الدروس المدرسي: إنشاء وتوليد جداول الحصص تلقائياً بدون تعارض</image:title>
+        </image:image>
     </url>
     <url>
         <loc>https://kinantouch.com/article-extreme-accounts-iptv</loc>
@@ -78,15 +87,6 @@
         <image:image>
             <image:loc>https://kinantouch.com/assets/images/1789846942774_file_00000000dfa0820a9c45846b41de063a.webp</image:loc>
             <image:title>حل مشكلة التطببق غير متوافق مع الهاتف</image:title>
-        </image:image>
-    </url>
-    <url>
-        <loc>https://kinantouch.com/article-jdwl-aldrws-almdrsy</loc>
-        <lastmod>2026-08-23T12:35:00.000Z</lastmod>
-        <priority>0.8</priority>
-        <image:image>
-            <image:loc>https://kinantouch.com/assets/images/1787488624742_file_00000000774c81f48e967e026feec8bc.webp</image:loc>
-            <image:title>جدول الدروس المدرسي: إنشاء وتوليد جداول الحصص تلقائياً بدون تعارض</image:title>
         </image:image>
     </url>
     <url>
