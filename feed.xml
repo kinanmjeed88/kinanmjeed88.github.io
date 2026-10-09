@@ -9,10 +9,55 @@
   <link>https://kinantouch.com</link>
   <description>المصدر العربي الأول للمقالات التقنية، مراجعات الهواتف، والتطبيقات.</description>
   <language>ar</language>
-  <lastBuildDate>Thu, 08 Oct 2026 06:21:28 GMT</lastBuildDate>
+  <lastBuildDate>Fri, 09 Oct 2026 06:23:11 GMT</lastBuildDate>
   <ttl>60</ttl>
   <atom:link href="https://kinantouch.com/feed.xml" rel="self" type="application/rss+xml" />
 
+  <item>
+    <title><![CDATA[شرح InstallerX Revived: البديل الأقوى لمثبت النظام ودعم Shizuku و Root]]></title>
+    <link>https://kinantouch.com/article-shrh-installerx-revi</link>
+    <guid isPermaLink="true">https://kinantouch.com/article-shrh-installerx-revi</guid>
+    <pubDate>Thu, 08 Oct 2026 20:13:00 GMT</pubDate>
+    <dc:creator><![CDATA[كنان الصائغ]]></dc:creator>
+    <category>apps</category>
+    <description><![CDATA[البديل المتطور لمثبت تطبيقات أندرويد التقليدي. تثبيت جماعي، تجاوز قيود النظام، ودعم كامل لكافة صيغ الحزم والصلاحيات.]]></description>
+    <content:encoded><![CDATA[<div dir="rtl" lang="ar">
+
+<header>
+<div><span>أندرويد</span><span>نسخة المجتمع</span><span>مفتوح المصدر</span></div>
+<h1>مثبّت التطبيقات InstallerX Revived</h1>
+<p>مثبّت حزم حديث لأندرويد، يواصل المجتمع تطويره من مشروع InstallerX الأصلي. يستبدل مثبّت النظام المحدود بواجهة أنظف ودعم أوسع للصيغ وملفات تعريف تثبيت قابلة للضبط، مع صلاحيات متقدمة عبر Shizuku أو Root أو Dhizuku أو وضع مدير حزم النظام.</p>
+</header>
+
+<section><h2>ماذا يقدّم لك؟</h2>
+<div><div><h3>صيغ كثيرة</h3><p>يدعم APK وAPKS وAPKM وXAPK وملفات APK داخل أرشيف ZIP، مع تثبيت عدة ملفات APK دفعة واحدة.</p></div><div><h3>طرق تثبيت متنوعة</h3><p>نافذة تثبيت، أو تثبيت من الإشعارات في الخلفية، أو تثبيت تلقائي، أو صامت عندما تسمح الصلاحيات، مع عرض التقدم بـLive Activity على أندرويد 16 فأحدث في الأنظمة المدعومة.</p></div><div><h3>ملفات تعريف التثبيت</h3><p>حدّد كيف تُعالج طلبات التثبيت والحذف: وضع التثبيت، والمخوِّل، والمستخدم المستهدف، وDexOpt، والحذف التلقائي، واختيار الأجزاء المقسّمة.</p></div><div><h3>واجهة عصرية</h3><p>تصميما Material 3 Expressive وMiuix، ووضع داكن، وألوان ديناميكية، وحزم أيقونات النظام، وإشعارات بأسلوب جزيرة HyperOS على أجهزة شاومي المدعومة.</p></div><div><h3>ضوابط أمان</h3><p>قوائم حظر لاسم الحزمة وSharedUID، وبوابات لعدم تطابق التوقيع أو التوقيع المجهول، ومعاينة للأذونات، وخيارات التثبيت (install flags).</p></div><div><h3>تكامل مع النظام</h3><p>اجعله المثبّت الافتراضي من بطاقة الحالة في الصفحة الرئيسية، أو استعن بوحدات LSPosed مثل InxLocker، أو ثبّته بديلًا لمدير حزم النظام إن كنت مستخدمًا متقدمًا.</p></div></div></section>
+
+<section><h2>أي طريقة صلاحيات تختار؟</h2>
+<p>المخوِّل (Authorizer) هو ما يمنح التطبيق صلاحيات التثبيت المتقدمة، وله أربعة أوضاع:</p>
+<ul><li><span aria-hidden="true"></span><div><strong>Root</strong><span>ينفّذ كل العمليات المميّزة، لكنه قد يكون أبطأ بسبب البدء البارد لـapp_process.</span></div></li><li><span aria-hidden="true"></span><div><strong>Shizuku</strong><span>يمنح صلاحيات shell أو root بحسب طريقة تفعيله، وهو عادةً أسرع من Root المباشر.</span></div></li><li><span aria-hidden="true"></span><div><strong>Dhizuku</strong><span>ينفّذ عمليات DevicePolicyManager مثل قفل المثبّت الافتراضي وتثبيت التطبيقات، لكنه محدود في بقية المهام المميّزة.</span></div></li><li><span aria-hidden="true"></span><div><strong>بدون (None)</strong><span>مقيّد بالكامل بقيود النظام، لكنه يثبّت بصمت إذا كان InstallerX يعمل كمثبّت الحزم الخاص بالنظام.</span></div></li></ul></section>
+
+<section><h2>الإصدارات المدعومة</h2>
+<div><div><div><span aria-hidden="true"></span><h3>دعم كامل</h3></div><p>أندرويد 14 فأحدث (SDK 34 – 37.0)</p></div><div><div><span aria-hidden="true"></span><h3>دعم محدود</h3></div><p>أندرويد 8 إلى 13 (SDK 26 – 33)</p></div></div>
+<p>الدعم المحدود يعني أن التطبيق قد يعمل، لكن بعض الميزات قد لا تتوفر أو تتصرف بشكل مختلف بسبب قيود إطار أندرويد أو الشركة المصنّعة أو المخوِّل.</p></section>
+
+<section><h2>حلول لأشهر المشاكل</h2>
+<div><div><h3>لا أستطيع جعله المثبّت الافتراضي</h3><p>بعض أنظمة الشركات تتحكم بصرامة في مثبّت الحزم الافتراضي. افتح صفحة المثبّت الافتراضي من بطاقة الحالة في الصفحة الرئيسية وجرّب القفل من هناك، وإن منعته الروم فاستخدم وحدة LSPosed مثل InxLocker.</p></div><div><h3>HyperOS يطلب مثبّتًا صالحًا لتثبيت تطبيقات النظام</h3><p>هذا قيد أمني من الشركة المصنّعة. يعرّف InstallerX بيانات المثبّت عبر ملفات التعريف، ويستخدم com.android.shell مثبّتًا افتراضيًا للتوافق على HyperOS. يلزم Shizuku أو Root، ولا يكفي Dhizuku.</p></div><div><h3>تقدّم التثبيت في الإشعار متوقف</h3><p>بعض الأنظمة تقيّد الخدمات الخلفية بشدة. اضبط InstallerX على وضع الخلفية أو البطارية غير المقيّد إذا تعطّل التثبيت عبر الإشعار.</p></div><div><h3>كيف أستبدل مدير الحزم في النظام؟</h3><p>مسار متقدم وعالي الخطورة: تُستخدم Core Patch لاستبدال ملف APK، أو وحدة مطابقة تُفلَش، أو دمج الحزمة المناسبة في super أو في ROM. تحقق قبل ذلك من اسم الحزمة ومسار التركيب وملف الأذونات لنظامك. التفاصيل في <a href="https://wxxsfxyzm.github.io/InstallerX-Revived-Website/guide/system-integration" target="_blank" rel="noopener noreferrer">دليل التكامل مع النظام</a>.</p></div></div></section>
+
+<section><h2>روابط رسمية</h2>
+<ul><li><a href="https://github.com/wxxsfxyzm/InstallerX-Revived/releases/latest" target="_blank" rel="noopener noreferrer">الإصدارات المستقرة على GitHub</a></li><li><a href="https://wxxsfxyzm.github.io/InstallerX-Revived-Website/" target="_blank" rel="noopener noreferrer">الدليل الكامل للاستخدام</a></li><li><a href="https://t.me/installerx_revived" target="_blank" rel="noopener noreferrer">قناة المشروع على تيليجرام</a></li></ul>
+<p>عند الإبلاغ عن مشكلة جرّب أحدث نسخة Alpha أو CI أولًا، فقد تكون أُصلحت. المشروع مرخّص بموجب GNU GPL v3، وحقوقه لـiamr0s ومساهمي InstallerX Revived.</p></section>
+
+<section>
+<h2>حمّل التطبيق الآن</h2>
+<p>يُنشر التطبيق كملف APK واحد، ويُتحكَّم بالوصول إلى الشبكة من إعداداته. وإن ظهرت كلمة online في اسم الملف فهي للتوافق مع عملاء التحديث القديمة فقط.</p>
+<div><a href="https://t.me/techtouch7/5894" target="_blank" rel="noopener noreferrer">تحميل من تيليجرام</a></div>
+</section>
+
+</div>
+]]></content:encoded>
+    <media:content url="https://kinantouch.com/assets/images/1791490832476_file_00000000b398821086969ff5125f1e66.webp" type="image/webp" medium="image" />
+    <enclosure url="https://kinantouch.com/assets/images/1791490832476_file_00000000b398821086969ff5125f1e66.webp" type="image/webp" />
+  </item>
   <item>
     <title><![CDATA[جدول الدروس المدرسي: إنشاء وتوليد جداول الحصص تلقائياً بدون تعارض]]></title>
     <link>https://kinantouch.com/article-jdwl-aldrws-almdrsy</link>
@@ -4712,148 +4757,6 @@ function copyToClipboard(text, message) {
 ]]></content:encoded>
     <media:content url="https://kinantouch.com/assets/images/1775038008366_20260401_130620.webp" type="image/webp" medium="image" />
     <enclosure url="https://kinantouch.com/assets/images/1775038008366_20260401_130620.webp" type="image/webp" />
-  </item>
-  <item>
-    <title><![CDATA[تحديث الأسطورة 2026: استقرار فائق، بدون إعلانات، وإضافة قنوات رياضية حصرية.]]></title>
-    <link>https://kinantouch.com/article-al-shoura-tv-2026</link>
-    <guid isPermaLink="true">https://kinantouch.com/article-al-shoura-tv-2026</guid>
-    <pubDate>Mon, 30 Mar 2026 17:05:00 GMT</pubDate>
-    <dc:creator><![CDATA[كنان الصائغ]]></dc:creator>
-    <category>sports</category>
-    <description><![CDATA[حمل التحديث الأحدث لتطبيق الأسطورة للشاشات والهواتف، واستمتع بمشاهدة جميع القنوات الرياضية والترفيهية بجودة عالية وخالية من الإعلانات.]]></description>
-    <content:encoded><![CDATA[<div dir="rtl">
-
-    <h1>
-        تحديث الأسطورة 2026: استقرار فائق، بدون إعلانات، وإضافة قنوات رياضية حصرية.
-    </h1>
-
-    <p>
-        <span>#تحديث_جديد</span> لتطبيق <strong>الأسطورة للشاشات</strong>، يتضمن حلولاً لأغلب المشاكل التقنية السابقة مع تحسينات شاملة في الأداء.
-    </p>
-
-    <div>
-        <div>
-            <span>
-              <span></span>
-              <span></span>
-            </span>
-            <h3>تنويه هام</h3>
-        </div>
-        <ul>
-            <li>تم إضافة قنوات ألوان الرياضية.</li>
-            <li>تم إضافة قنوات ثمانية الرياضية.</li>
-        </ul>
-    </div>
-
-    <section>
-        <div>
-            <h3>ميزات التطبيق</h3>
-            <ul>
-                <li>قنوات رياضية متكاملة.</li>
-                <li>محتوى ترفيهي ضخم.</li>
-                <li>بث بجودة عالية ومستقرة.</li>
-            </ul>
-        </div>
-        <div>
-            <h3>التعديلات الإضافية ✦</h3>
-            <ul>
-                <li>تم إيقاف الإعلانات المزعجة بالكامل.</li>
-            </ul>
-        </div>
-    </section>
-
-    <section>
-        <h3>الباقات والقنوات المتوفرة</h3>
-        <div>
-            <div>قنوات الأخبار</div>
-            <div>قنوات الرياضة المصرية</div>
-            <div>بي ان سبورت Auto H265</div>
-            <div>بي ان سبورت FHD H265</div>
-            <div>بي ان سبورت HD H265</div>
-            <div>بي ان سبورت SD H265</div>
-            <div>بي ان سبورت LOW H265</div>
-            <div>بي ان سبورت HD / SD</div>
-            <div>ألوان الرياضية</div>
-            <div>ثمانية الرياضية</div>
-            <div>SHAHID SPORTS</div>
-            <div>ستارز بلاي سبورت</div>
-            <div>أبو ظبي الرياضية</div>
-            <div>LIVE FOOTBALL</div>
-            <div>مشاهد</div>
-            <div>Falcon Eye HD</div>
-            <div>STC TV / SPORTS</div>
-            <div>بی ان سبورت تركي</div>
-            <div>السعودية الرياضية</div>
-            <div>الكأس الرياضية</div>
-            <div>FOX / FOX SPORTS</div>
-            <div>BT SPORT</div>
-            <div>RMC Sport</div>
-            <div>TSN</div>
-            <div>قنوات الرياضة العربية</div>
-            <div>قنوات المصارعة</div>
-            <div>ART</div>
-            <div>قنوات دبي</div>
-            <div>شاهد mbc</div>
-            <div>روتانا / میلودی</div>
-            <div>وياك / مسرح مصر</div>
-            <div>أفلام النجوم</div>
-            <div>الاسطورة أفلام / VIP</div>
-            <div>شو تايم أفلام</div>
-            <div>شاهد VIP</div>
-            <div>بي ان الترفيهية</div>
-            <div>باقة OSN</div>
-            <div>Netflix / NETFLIX 2</div>
-            <div>ماجيستك</div>
-            <div>باقة شاهد</div>
-            <div>قنوات الفجر</div>
-            <div>القنوات المصرية</div>
-            <div>القنوات المغربية</div>
-            <div>القنوات الجزائرية</div>
-            <div>القنوات السورية</div>
-            <div>القنوات السودانية</div>
-            <div>ام بی سي / MBC جودة متوسطة</div>
-            <div>قنوات الأطفال</div>
-        </div>
-    </section>
-
-    <section>
-        <h3>أكواد التحميل للشاشات (عبر تطبيق Downloader)</h3>
-        <p>اضغط على الكود لنسخه مباشرة (يرجى إدخال المشغل المطلوب عند طلب التطبيق):</p>
-
-        <div>
-            <div onclick="navigator.clipboard.writeText('6180485'); alert('تم نسخ كود الأسطورة');">
-                <span>الأسطورة</span>
-                <span>6180485</span>
-            </div>
-
-            <div onclick="navigator.clipboard.writeText('9928180'); alert('تم نسخ كود المشغل الأول');">
-                <span>المشغل الاول</span>
-                <span>9928180</span>
-            </div>
-
-            <div onclick="navigator.clipboard.writeText('6180347'); alert('تم نسخ كود المشغل الثاني');">
-                <span>المشغل الثاني</span>
-                <span>6180347</span>
-            </div>
-        </div>
-    </section>
-
-    <div>
-        <h4>لتحميل تطبيق Downloader (نقل التطبيق عن طريق فلاش ميموري ونقله للشاشة ومن ثم التثبيت واستخدم اكواد داونلودر)</h4>
-        <div>
-            <a href="https://t.me/techtouch7/2021" target="_blank" rel="noopener noreferrer">
-                تنزيل التطبيق للشاشة (عبر USB)
-            </a>
-            <a href="https://t.me/techtouch7/4734?comment=86357" target="_blank" rel="noopener noreferrer">
-                تنزيل التطبيق للهاتف
-            </a>
-        </div>
-    </div>
-
-</div>
-]]></content:encoded>
-    <media:content url="https://kinantouch.com/assets/images/1774894672307_20260330_211731.webp" type="image/webp" medium="image" />
-    <enclosure url="https://kinantouch.com/assets/images/1774894672307_20260330_211731.webp" type="image/webp" />
   </item>
 </channel>
 </rss>
