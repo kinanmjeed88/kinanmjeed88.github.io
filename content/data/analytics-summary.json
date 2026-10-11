@@ -1,67 +1,67 @@
 {
-  "generatedAt": "2026-10-11T01:03:53.141Z",
+  "generatedAt": "2026-10-11T06:02:39.745Z",
   "propertyId": "521215223",
   "source": "ga4-data-api",
   "note": "Hourly windows end at the latest hour GA4 has data for; day windows use GA4 relative dates (property timezone).",
   "hourlyRange": {
     "start": "2026-10-04T00:00:00.000Z",
-    "end": "2026-10-11T03:00:00.000Z"
+    "end": "2026-10-11T07:00:00.000Z"
   },
   "effectiveWindows": {
     "h24": {
-      "start": "2026-10-10T03:00:00.000Z",
-      "end": "2026-10-11T03:00:00.000Z"
+      "start": "2026-10-10T07:00:00.000Z",
+      "end": "2026-10-11T07:00:00.000Z"
     },
     "h48": {
-      "start": "2026-10-09T03:00:00.000Z",
-      "end": "2026-10-11T03:00:00.000Z"
+      "start": "2026-10-09T07:00:00.000Z",
+      "end": "2026-10-11T07:00:00.000Z"
     }
   },
   "periods": {
     "h24": {
-      "users": 190,
-      "totalUsers": 212,
-      "newUsers": 120,
-      "sessions": 212,
-      "views": 250,
-      "start": 1791601200000,
-      "end": 1791687600000,
+      "users": 198,
+      "totalUsers": 218,
+      "newUsers": 132,
+      "sessions": 218,
+      "views": 267,
+      "start": 1791615600000,
+      "end": 1791702000000,
       "partial": false,
-      "buckets": 23,
+      "buckets": 24,
       "prev": {
-        "users": 224,
-        "totalUsers": 236,
-        "newUsers": 156,
-        "sessions": 238,
-        "views": 346
+        "users": 218,
+        "totalUsers": 231,
+        "newUsers": 153,
+        "sessions": 233,
+        "views": 337
       },
-      "change": -0.15178571428571427
+      "change": -0.09174311926605505
     },
     "h48": {
-      "users": 414,
-      "totalUsers": 448,
-      "newUsers": 276,
-      "sessions": 450,
-      "views": 596,
-      "start": 1791514800000,
-      "end": 1791687600000,
+      "users": 416,
+      "totalUsers": 449,
+      "newUsers": 285,
+      "sessions": 451,
+      "views": 604,
+      "start": 1791529200000,
+      "end": 1791702000000,
       "partial": false,
       "buckets": 47,
       "prev": {
-        "users": 312,
+        "users": 313,
         "totalUsers": 335,
-        "newUsers": 251,
-        "sessions": 336,
-        "views": 544
+        "newUsers": 249,
+        "sessions": 335,
+        "views": 543
       },
-      "change": 0.3269230769230769
+      "change": 0.329073482428115
     },
     "d30": {
-      "users": 5670,
-      "totalUsers": 5823,
-      "newUsers": 5114,
-      "sessions": 7300,
-      "views": 11775,
+      "users": 5688,
+      "totalUsers": 5840,
+      "newUsers": 5135,
+      "sessions": 7319,
+      "views": 11808,
       "start": null,
       "end": null,
       "partial": false,
@@ -73,14 +73,14 @@
         "sessions": 7485,
         "views": 12910
       },
-      "change": -0.08207867897037396
+      "change": -0.07916464303059738
     },
     "d365": {
-      "users": 47743,
-      "totalUsers": 47849,
-      "newUsers": 47332,
-      "sessions": 75977,
-      "views": 127716,
+      "users": 47752,
+      "totalUsers": 47858,
+      "newUsers": 47353,
+      "sessions": 76093,
+      "views": 127749,
       "start": null,
       "end": null,
       "partial": false,
