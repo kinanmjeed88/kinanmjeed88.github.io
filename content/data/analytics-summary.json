@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-25T04:59:06.282Z",
+  "generatedAt": "2026-10-25T06:17:18.252Z",
   "propertyId": "521215223",
   "source": "ga4-data-api",
   "note": "Hourly windows end at the latest hour GA4 has data for; day windows use GA4 relative dates (property timezone).",
@@ -19,11 +19,11 @@
   },
   "periods": {
     "h24": {
-      "users": 160,
-      "totalUsers": 168,
-      "newUsers": 132,
-      "sessions": 170,
-      "views": 260,
+      "users": 162,
+      "totalUsers": 171,
+      "newUsers": 134,
+      "sessions": 173,
+      "views": 264,
       "start": 1792825200000,
       "end": 1792911600000,
       "partial": false,
@@ -35,14 +35,14 @@
         "sessions": 196,
         "views": 295
       },
-      "change": -0.10112359550561797
+      "change": -0.0898876404494382
     },
     "h48": {
-      "users": 338,
-      "totalUsers": 363,
-      "newUsers": 254,
-      "sessions": 366,
-      "views": 555,
+      "users": 340,
+      "totalUsers": 366,
+      "newUsers": 256,
+      "sessions": 369,
+      "views": 559,
       "start": 1792738800000,
       "end": 1792911600000,
       "partial": false,
@@ -54,14 +54,14 @@
         "sessions": 352,
         "views": 521
       },
-      "change": 0.03048780487804878
+      "change": 0.036585365853658534
     },
     "d30": {
-      "users": 4370,
-      "totalUsers": 4475,
-      "newUsers": 3909,
-      "sessions": 5395,
-      "views": 9092,
+      "users": 4372,
+      "totalUsers": 4477,
+      "newUsers": 3911,
+      "sessions": 5399,
+      "views": 9096,
       "start": null,
       "end": null,
       "partial": false,
@@ -73,14 +73,14 @@
         "sessions": 8309,
         "views": 13603
       },
-      "change": -0.3383800151400454
+      "change": -0.3380772142316427
     },
     "d365": {
-      "users": 49565,
-      "totalUsers": 49657,
-      "newUsers": 49084,
-      "sessions": 78790,
-      "views": 131695,
+      "users": 49568,
+      "totalUsers": 49660,
+      "newUsers": 49086,
+      "sessions": 78887,
+      "views": 131699,
       "start": null,
       "end": null,
       "partial": false,
