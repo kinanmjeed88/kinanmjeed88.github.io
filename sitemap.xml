@@ -4,63 +4,72 @@
 
     <url>
         <loc>https://kinantouch.com</loc>
-        <lastmod>2026-10-25T04:59:07.288Z</lastmod>
+        <lastmod>2026-10-26T05:02:51.496Z</lastmod>
         <priority>1.0</priority>
     </url>
     <url>
         <loc>https://kinantouch.com/apps</loc>
-        <lastmod>2026-10-25T04:59:07.288Z</lastmod>
+        <lastmod>2026-10-26T05:02:51.496Z</lastmod>
         <priority>0.9</priority>
     </url>
     <url>
         <loc>https://kinantouch.com/games</loc>
-        <lastmod>2026-10-25T04:59:07.288Z</lastmod>
+        <lastmod>2026-10-26T05:02:51.496Z</lastmod>
         <priority>0.9</priority>
     </url>
     <url>
         <loc>https://kinantouch.com/sports</loc>
-        <lastmod>2026-10-25T04:59:07.288Z</lastmod>
+        <lastmod>2026-10-26T05:02:51.496Z</lastmod>
         <priority>0.9</priority>
     </url>
     <url>
         <loc>https://kinantouch.com/tools</loc>
-        <lastmod>2026-10-25T04:59:07.288Z</lastmod>
+        <lastmod>2026-10-26T05:02:51.496Z</lastmod>
         <priority>0.9</priority>
     </url>
     <url>
         <loc>https://kinantouch.com/about</loc>
-        <lastmod>2026-10-25T04:59:07.288Z</lastmod>
+        <lastmod>2026-10-26T05:02:51.496Z</lastmod>
         <priority>0.7</priority>
     </url>
     <url>
         <loc>https://kinantouch.com/tools-sites</loc>
-        <lastmod>2026-10-25T04:59:07.288Z</lastmod>
+        <lastmod>2026-10-26T05:02:51.496Z</lastmod>
         <priority>0.8</priority>
     </url>
     <url>
         <loc>https://kinantouch.com/tools-phones</loc>
-        <lastmod>2026-10-25T04:59:07.288Z</lastmod>
+        <lastmod>2026-10-26T05:02:51.496Z</lastmod>
         <priority>0.8</priority>
     </url>
     <url>
         <loc>https://kinantouch.com/tools-compare</loc>
-        <lastmod>2026-10-25T04:59:07.288Z</lastmod>
+        <lastmod>2026-10-26T05:02:51.496Z</lastmod>
         <priority>0.7</priority>
     </url>
     <url>
         <loc>https://kinantouch.com/tool-analysis</loc>
-        <lastmod>2026-10-25T04:59:07.288Z</lastmod>
+        <lastmod>2026-10-26T05:02:51.496Z</lastmod>
         <priority>0.7</priority>
     </url>
     <url>
         <loc>https://kinantouch.com/privacy</loc>
-        <lastmod>2026-10-25T04:59:07.288Z</lastmod>
+        <lastmod>2026-10-26T05:02:51.496Z</lastmod>
         <priority>0.3</priority>
     </url>
     <url>
         <loc>https://kinantouch.com/site-map</loc>
-        <lastmod>2026-10-25T04:59:07.288Z</lastmod>
+        <lastmod>2026-10-26T05:02:51.496Z</lastmod>
         <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://kinantouch.com/article-nshr-rwabt-albth-alm</loc>
+        <lastmod>2026-10-25T08:00:00.000Z</lastmod>
+        <priority>0.8</priority>
+        <image:image>
+            <image:loc>https://kinantouch.com/assets/images/1770940566987_file_000000004e90720a8791e6fdb9905420_(1).webp</image:loc>
+            <image:title>نشر روابط البث المباشر        متجدد</image:title>
+        </image:image>
     </url>
     <url>
         <loc>https://kinantouch.com/article-shrh-installerx-revi</loc>
@@ -168,15 +177,6 @@
         <image:image>
             <image:loc>https://kinantouch.com/assets/images/1772013254030_٢٠٢٦٠٢٢٥_١٢٣٤٠٣.webp</image:loc>
             <image:title>Netfly TV: للاندرويد – نسخة VIP + كود التفعيل للشاشات</image:title>
-        </image:image>
-    </url>
-    <url>
-        <loc>https://kinantouch.com/article-nshr-rwabt-albth-alm</loc>
-        <lastmod>2026-05-17T05:00:00.000Z</lastmod>
-        <priority>0.8</priority>
-        <image:image>
-            <image:loc>https://kinantouch.com/assets/images/1770940566987_file_000000004e90720a8791e6fdb9905420_(1).webp</image:loc>
-            <image:title>نشر روابط البث المباشر        متجدد</image:title>
         </image:image>
     </url>
     <url>
