@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-01T06:28:49.884Z",
+  "generatedAt": "2026-11-01T07:40:38.549Z",
   "propertyId": "521215223",
   "source": "ga4-data-api",
   "note": "Hourly windows end at the latest hour GA4 has data for; day windows use GA4 relative dates (property timezone).",
@@ -19,30 +19,30 @@
   },
   "periods": {
     "h24": {
-      "users": 177,
-      "totalUsers": 198,
-      "newUsers": 145,
-      "sessions": 204,
-      "views": 322,
+      "users": 186,
+      "totalUsers": 203,
+      "newUsers": 149,
+      "sessions": 209,
+      "views": 328,
       "start": 1793433600000,
       "end": 1793520000000,
       "partial": false,
       "buckets": 24,
       "prev": {
-        "users": 234,
+        "users": 235,
         "totalUsers": 250,
         "newUsers": 170,
         "sessions": 253,
         "views": 427
       },
-      "change": -0.24358974358974358
+      "change": -0.20851063829787234
     },
     "h48": {
-      "users": 411,
-      "totalUsers": 448,
-      "newUsers": 315,
-      "sessions": 457,
-      "views": 749,
+      "users": 421,
+      "totalUsers": 453,
+      "newUsers": 319,
+      "sessions": 462,
+      "views": 755,
       "start": 1793347200000,
       "end": 1793520000000,
       "partial": false,
@@ -54,14 +54,14 @@
         "sessions": 296,
         "views": 443
       },
-      "change": 0.4784172661870504
+      "change": 0.5143884892086331
     },
     "d30": {
-      "users": 4414,
-      "totalUsers": 4522,
-      "newUsers": 3901,
-      "sessions": 5528,
-      "views": 8784,
+      "users": 4418,
+      "totalUsers": 4526,
+      "newUsers": 3905,
+      "sessions": 5493,
+      "views": 8790,
       "start": null,
       "end": null,
       "partial": false,
@@ -73,14 +73,14 @@
         "sessions": 8407,
         "views": 13684
       },
-      "change": -0.323213738117142
+      "change": -0.3226004293161607
     },
     "d365": {
-      "users": 50720,
-      "totalUsers": 50812,
-      "newUsers": 50218,
-      "sessions": 80103,
-      "views": 134235,
+      "users": 50723,
+      "totalUsers": 50815,
+      "newUsers": 50222,
+      "sessions": 80030,
+      "views": 134241,
       "start": null,
       "end": null,
       "partial": false,
