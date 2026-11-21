@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-21T07:28:12.437Z",
+  "generatedAt": "2026-11-21T08:22:12.366Z",
   "propertyId": "521215223",
   "source": "ga4-data-api",
   "note": "Hourly windows end at the latest hour GA4 has data for; day windows use GA4 relative dates (property timezone).",
