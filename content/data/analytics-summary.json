@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-28T08:11:06.750Z",
+  "generatedAt": "2026-11-28T08:58:03.706Z",
   "propertyId": "521215223",
   "source": "ga4-data-api",
   "note": "Hourly windows end at the latest hour GA4 has data for; day windows use GA4 relative dates (property timezone).",
@@ -19,7 +19,7 @@
   },
   "periods": {
     "h24": {
-      "users": 103,
+      "users": 104,
       "totalUsers": 108,
       "newUsers": 85,
       "sessions": 108,
@@ -29,16 +29,16 @@
       "partial": false,
       "buckets": 23,
       "prev": {
-        "users": 106,
+        "users": 107,
         "totalUsers": 112,
         "newUsers": 86,
         "sessions": 113,
         "views": 194
       },
-      "change": -0.02830188679245283
+      "change": -0.028037383177570093
     },
     "h48": {
-      "users": 209,
+      "users": 211,
       "totalUsers": 220,
       "newUsers": 171,
       "sessions": 221,
@@ -54,13 +54,13 @@
         "sessions": 225,
         "views": 361
       },
-      "change": 0.014563106796116505
+      "change": 0.024271844660194174
     },
     "d30": {
       "users": 3611,
       "totalUsers": 3702,
       "newUsers": 3185,
-      "sessions": 4384,
+      "sessions": 4388,
       "views": 7242,
       "start": null,
       "end": null,
@@ -79,7 +79,7 @@
       "users": 53636,
       "totalUsers": 53727,
       "newUsers": 53064,
-      "sessions": 84324,
+      "sessions": 84311,
       "views": 140679,
       "start": null,
       "end": null,
